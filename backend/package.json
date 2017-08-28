@@ -1,0 +1,22 @@
+{
+  "name": "node-server",
+  "version": "1.0.0",
+  "description": "The backend system receiving requests to display the appropriate contents out to different systems",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/tests.js",
+    "start": "node src/index.js"
+  },
+  "author": "Group 2",
+  "license": "MIT",
+  "dependencies": {
+    "chai": "^4.1.1",
+    "chai-http": "^3.0.0",
+    "cors": "^2.8.4",
+    "express": "^4.15.4",
+    "http": "0.0.0",
+    "mocha": "^3.5.0",
+    "mysql": "^2.14.1",
+    "restify": "^5.2.0"
+  }
+}
