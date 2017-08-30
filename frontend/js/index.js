@@ -7,18 +7,25 @@ HELLO_WORLD();
 
 const BODY = document.getElementById("body");
 
-BODY.innerHTML = "HELLO WORLD";
+//BODY.innerHTML = "HELLO WORLD";
 
-function queryServer() {
+const REST_API_URL = "rest/1/";
+
+function queryServer(url, callback) {
     // try and visit localhost:3000
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", "http://localhost:3000", true);
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", "http://localhost:3000/" + url, true);
     xmlHttp.send();
-    xmlHttp.onreadystatechange = processRequest;
+    xmlHttp.onreadystatechange = callback;
 }
 
 function processRequest(e) {
     console.log(e);
+    //BODY.innerHTML = e.currentTarget.response;
+    let week = e.currentTarget.response;
+    buildTable(week);
 }
 
-queryServer();
+//queryServer("", processRequest);
+
+queryServer(REST_API_URL + "week/current", processRequest);

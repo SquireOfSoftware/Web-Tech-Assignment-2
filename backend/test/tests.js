@@ -1,7 +1,19 @@
-const mocha = require('mocha');
-// figure out how to write tests
-//Test.describe("server starts", true);
 
-let Test = mocha.Test;
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 
-Test.describe("server starts");
+const expect = chai.expect;
+chai.use(chaiHttp);
+
+let server = require('../src/index');
+
+const url = "http://localhost:3000";
+
+describe("server starts", () => {
+
+    it("test chai test", async () => {
+        chai.assert(true === true, "should be true");
+
+    })
+
+});
