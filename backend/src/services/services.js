@@ -10,7 +10,8 @@ function getWeekTemplate() {
                     {
                         id: 1,
                         start: "time",
-                        end: "time"
+                        end: "time",
+                        user: "joseph"
                     },
                     {
                         id: 2,
@@ -38,23 +39,36 @@ function getWeekTemplate() {
     }
 }
 
-function getCurrentWeek() {
-    return {}
+function getCurrentWeek(callback) {
+    mysqlConnector.query("SELECT * from Shift " +
+        "WHERE Shift.day_date = Day.day_date AND " +
+        "Day.day_date = Week",
+        function (result) {
+            callback(result);
+        });
 }
 
-function getDummyCurrentWeek() {
-    return [
+function getDummyCurrentWeek(callback) {
+    callback([
         {
             name: 'Monday',
             shifts: [
                 {
                     id: 1,
-                    start: Date.now(),
-                    end: Date.now() + 3
+                    start: "08:00:00",
+                    end: "11:00:00",
+                    role: "cook",
+                    user: "JosephTran",
+                }, {
+                    id: 2,
+                    start: "12:00:00",
+                    end: "17:00:00",
+                    role: "cook",
+                    user: "JosephTran",
                 }
             ]
         }
-    ];
+    ]);
 }
 
 function respond(request) {

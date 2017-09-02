@@ -7,7 +7,7 @@ module.exports = {
             host: 'localhost',
             user: 'root',
             password: '',
-            database: 'Drone_Surveying_System'
+            database: 'scheduledb'
         });
 
         let result = {};
@@ -21,6 +21,8 @@ module.exports = {
             result = rows;
 
             callback(result);
+
+            connection.disconnect();
         });
     }
 };

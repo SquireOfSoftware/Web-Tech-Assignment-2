@@ -5,9 +5,7 @@ const HELLO_WORLD = function() {
 
 HELLO_WORLD();
 
-const BODY = document.getElementById("body");
-
-//BODY.innerHTML = "HELLO WORLD";
+const BODY = document.getElementById("week");
 
 const REST_API_URL = "rest/1/";
 
@@ -20,10 +18,10 @@ function queryServer(url, callback) {
 }
 
 function processRequest(e) {
-    console.log(e);
-    //BODY.innerHTML = e.currentTarget.response;
-    let week = e.currentTarget.response;
-    buildTable(week);
+    if(BODY.innerHTML === "") {
+        let week = e.currentTarget.response;
+        buildTable(JSON.parse(week));
+    }
 }
 
 //queryServer("", processRequest);

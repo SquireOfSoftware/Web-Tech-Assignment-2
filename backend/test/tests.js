@@ -9,11 +9,15 @@ let server = require('../src/index');
 
 const url = "http://localhost:3000";
 
-describe("server starts", () => {
+describe("check login details ", () => {
 
-    it("test chai test", async () => {
-        chai.assert(true === true, "should be true");
+    it("bad username bad password", () => {
+        //request("")
+    });
 
-    })
+    it("bad username good password", () => {
+        //chai.assert(true === true, "should be true");
+
+    });
 
 });
