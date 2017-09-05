@@ -16,8 +16,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get(REST_PREFIX + '/products/:id', function (req, res, next) {
-    mysqlConnector.query("Select * from Drone",
+app.get(REST_PREFIX + '/test/', function (req, res, next) {
+    mysqlConnector.query("select * from shift\n" +
+        "where (shift.day_date = '2017-09-05');",
     function (result) {
         res.json(result);
     });

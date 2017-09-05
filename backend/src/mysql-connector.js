@@ -15,14 +15,17 @@ module.exports = {
         connection.connect();
 
         connection.query(queryString, function (err, rows, fields) {
-            if (err) throw err;
+            if (err) {
+                connection.end();
+                throw err;
+            }
 
             console.log(rows);
             result = rows;
 
             callback(result);
 
-            connection.disconnect();
+            connection.end();
         });
     }
 };
