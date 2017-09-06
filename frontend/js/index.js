@@ -12,18 +12,19 @@ const REST_API_URL = "rest/1/";
 function queryServer(url, callback) {
     // try and visit localhost:3000
     let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", "http://localhost:3000/" + url, true);
+    xmlHttp.open("GET", "http://localhost:3000/" + REST_API_URL + url, true);
     xmlHttp.send();
     xmlHttp.onreadystatechange = callback;
 }
 
 function processRequest(e) {
-    if(BODY.innerHTML === "") {
+    if(BODY.filled === undefined) {
         let week = e.currentTarget.response;
-        buildTable(JSON.parse(week));
+        buildTable(JSON.parse(week).days);
+        BODY.filled = true;
     }
 }
 
-//queryServer("", processRequest);
+//queryServer("week/current", processRequest);
 
-queryServer(REST_API_URL + "week/current", processRequest);
+queryServer("test", processRequest);

@@ -17,9 +17,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get(REST_PREFIX + '/test/', function (req, res, next) {
-    mysqlConnector.query("select * from shift\n" +
+    mysqlConnector.query("select shift.*, day.day_name from shift, day\n" +
         "where (shift.day_date = '2017-09-05');",
     function (result) {
+        let output = { name: "week", days: result};
+        res.json(output);
+    });
+});
+
+app.get(REST_PREFIX + '/days/', function (req, res, next) {
+    mysqlConnector.query("select * from day;", function (result) {
         res.json(result);
     });
 });

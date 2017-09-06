@@ -37,18 +37,13 @@ function setupTime(time) {
 function buildTable (weekData) {
     // run through the object
     // run through day by day
-
-    // could use angular and tag things appropriately
-    let BODY = document.getElementById("body");
-    //BODY.innerHTML = buildDay("Monday");
-    BODY.innerHTML = "";
-    weekElement = "";
-    //weekElement.push()
-    //console.log(weekData[0]);
+    console.log(weekData);
     for (let i = 0; i < weekData.length; i++) {
 
         let dayData = buildDay(weekData[i]);
-        BODY.appendChild(dayData);
+        // read day by day
+        // colour the time slots appropriately (if not coloured)
+        console.log(weekData[i]);
     }
 }
 
@@ -64,9 +59,6 @@ function buildDay(dayData) {
 function buildTimes(shiftsData) {
     let timesElement = document.createElement("div");
     timesElement.setAttribute("id", shiftsData.id);
-    // for (let i = 0; i < shiftsData.length; i++) {
-    //     timesElement.appendChild(buildTime(shiftsData[i]));
-    // }
 
     return timesElement;
 }
