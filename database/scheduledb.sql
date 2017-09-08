@@ -110,17 +110,17 @@ COMMENT = 'A shift';
 
 USE `scheduledb`;
 
-DELIMITER $$
-USE `scheduledb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `scheduledb`.`Week_BEFORE_INSERT` BEFORE INSERT ON `Week` FOR EACH ROW
-BEGIN
-	IF week_number = 53 THEN
-		SET week_number = 1;
-	END IF;
-END$$
-
-
-DELIMITER ;
+-- DELIMITER $$
+-- USE `scheduledb`$$
+-- CREATE DEFINER = CURRENT_USER TRIGGER `scheduledb`.`Week_BEFORE_INSERT` BEFORE INSERT ON `Week` FOR EACH ROW
+-- BEGIN
+--        IF week_number = 53 THEN
+--                SET week_number = 1;
+--        END IF;
+-- END$$
+--
+--
+-- DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

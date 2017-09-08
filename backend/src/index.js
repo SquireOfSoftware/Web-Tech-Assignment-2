@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysqlConnector = require('./mysql-connector');
 const services = require('./services/services');
+const login = require('./login');
 
 let app = express();
 
@@ -49,10 +50,16 @@ app.get(REST_PREFIX + '/week/:id', function(req, res, next) {
     res.json({});
 });
 
-app.post(REST_PREFIX + '/login', function(req, res, next) {
-    console.log("login has been attempted");
-    console.log(req.body);
-    res.json({message: "good login"});
+app.get(REST_PREFIX + '/login', function(req, res, next) {
+        console.log("login has been attempted");
+        next()
+    },  function( req, res) {
+        var options = {
+            // cannot use '-' in file paths should change project folder name
+            // temporary static path
+            root:'/home/mminchenko/Public/'
+        };
+        res.sendFile('login.html', options);
 });
 
 app.listen(port, function () {
