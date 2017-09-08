@@ -13,7 +13,7 @@ function setupWeek() {
 function setupDay(name) {
     let day = document.createElement("div");
     day.setAttribute("id", name);
-    day.setAttribute("class", "day");
+    day.setAttribute("class", "day col-md-2");
     day.innerHTML = name;
     day.appendChild(setupTimes());
 

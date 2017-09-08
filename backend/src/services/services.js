@@ -1,5 +1,17 @@
 require('module');
 
+function getWeekFromDate(date) {
+    // should get "2017-09-04T14:00:00.000Z"
+    // format is ISOString
+    let x = new Date();
+    // gets current date
+
+    // we need to figure out what week we are on to get the respective data
+
+    // can hard code it, look for data given a particular day
+
+}
+
 function getWeekTemplate() {
     return {
         name: "week",

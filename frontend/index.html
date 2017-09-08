@@ -4,12 +4,32 @@
     <meta charset="UTF-8">
     <title>Web Technologies - Group 2</title>
     <link rel="stylesheet" href="./css/index.css" >
+    <script src="./lib/jquery-3.2.1.slim.min.js"></script>
+    <script src="./lib/popper.min.js"></script>
+    <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./lib/timetablejs/timetablejs.css" />
+    <script src="./lib/bootstrap-4.0.0-beta-dist/js/bootstrap.min.js"></script>
+    <script src="./lib/angular.min.js"></script>
+    <script src="./lib/timetablejs/timetable.min.js"></script>
 </head>
-<body>
-    <div id="week"></div>
+<body ng-app="myApp">
+    <div ng-controller="calendarCtrl" ng-hide="hasLoaded">
+        <!--<div class="col-sm-12 row" id="week" ng-init="init">
+            <div class="col-md-1" ng-repeat="day in days" id="{day.name}" >
+                <div class="row">
+                    {{day.name}}
+                </div>
+                <div class="row {time.id}" ng-repeat="time in times">
+
+                </div>
+            </div>
+        </div>-->
+        <div class="timetable">
+
+        </div>
+    </div>
     <footer>
-        <script src="./js/index.js"></script>
-        <script src="./js/tableBuilder.js"></script>
+        <script src="./js/app.js"></script>
     </footer>
 </body>
 </html>
