@@ -13,17 +13,7 @@
     <script src="./lib/timetablejs/timetable.min.js"></script>
 </head>
 <body ng-app="myApp">
-    <div ng-controller="calendarCtrl" ng-hide="hasLoaded">
-        <!--<div class="col-sm-12 row" id="week" ng-init="init">
-            <div class="col-md-1" ng-repeat="day in days" id="{day.name}" >
-                <div class="row">
-                    {{day.name}}
-                </div>
-                <div class="row {time.id}" ng-repeat="time in times">
-
-                </div>
-            </div>
-        </div>-->
+    <div ng-controller="calendarCtrl" ng-hide="!hasLoaded" ng-init="init()">
         <div class="timetable">
 
         </div>

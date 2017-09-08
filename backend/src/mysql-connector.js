@@ -16,16 +16,18 @@ module.exports = {
 
         connection.query(queryString, function (err, rows, fields) {
             if (err) {
+                callback({message: "There is a problem with the database"}, true);
                 connection.end();
-                throw err;
+
+            } else {
+
+                console.log(rows);
+                result = rows;
+
+                callback(result);
+
+                connection.end();
             }
-
-            console.log(rows);
-            result = rows;
-
-            callback(result);
-
-            connection.end();
         });
     }
 };
