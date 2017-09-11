@@ -4,16 +4,32 @@
     <meta charset="UTF-8">
     <title>Web Technologies - Group 2</title>
     <link rel="stylesheet" href="./css/index.css" >
-    <script src="./lib/jquery-3.2.1.slim.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/jquery-ui.min.js"></script>
+    <script src="./lib/moment.min.js"></script>
     <script src="./lib/popper.min.js"></script>
     <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="./lib/timetablejs/timetablejs.css" />
+    <link rel="stylesheet" href="./lib/fullcalendar/fullcalendar.min.css" />
     <script src="./lib/bootstrap-4.0.0-beta-dist/js/bootstrap.min.js"></script>
     <script src="./lib/angular.min.js"></script>
-    <script src="./lib/timetablejs/timetable.min.js"></script>
+    <script src="./lib/fullcalendar/fullcalendar.min.js"></script>
+    <!--<script src="./lib/timetablejs/timetable.min.js"></script>-->
 </head>
 <body ng-app="myApp">
-    <div ng-controller="calendarCtrl" ng-hide="!hasLoaded" ng-init="init()">
+    <div id="transparent-overlay" ng-hide="error.hide || success.hide">
+        <div id="success" ng-hide="!success.hide" class="message col-xs-12">
+            {{success.message}}
+        </div>
+        <div id="error" ng-hide="error.hide" class="message col-xs-12">
+            {{error.message}}
+        </div>
+
+    </div>
+
+    <div id="login">
+
+    </div>
+    <div id="viewing" ng-controller="calendarCtrl" ng-hide="!hasLoaded" ng-init="init()">
         <div class="timetable">
 
         </div>

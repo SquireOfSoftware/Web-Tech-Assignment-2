@@ -1,5 +1,35 @@
 /* TAGS */
 
 /* CLASS */
+.fc-event {
+    background-color: #86df86;
+}
+
+.message {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    min-height: 30%;
+    max-height: 40%;
+    position: absolute;
+}
 
 /* IDS */
+#transparent-overlay {
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: fixed;
+    display: none;
+    rgba(0, 0, 0, 0.2);
+}
+
+#error {
+    background-color: red;
+}
+
+#success {
+    background-color: #86df86;
+}
