@@ -83,6 +83,40 @@ function getDummyCurrentWeek(callback) {
     ]);
 }
 
+function getDummyDateRange(req, callback) {
+    console.log(req.query);
+    // parse the query make sure they are legit dates
+    // place a limit of 1000 events max to retrieve
+    callback([
+        {
+            title: 'Joseph',
+            start: '2017-09-12T14:00:00.000Z',
+            //allDay: true
+            end: '2017-09-12T17:00:00.000Z',
+        },
+        {
+            title: 'Richard',
+            start: '2017-09-13T09:00:00.000Z',
+            end: '2017-09-13T15:00:00.000Z'
+        },
+        {
+            title: 'Mark',
+            start: '2017-09-11T09:00:00.000Z',
+            end: '2017-09-11T17:00:00.000Z'
+        },
+        {
+            title: 'Daniel',
+            start: '2017-09-15T08:00:00.000Z',
+            end: '2017-09-15T09:00:00.000Z'
+        },
+        {
+            title: 'Greg',
+            start: '2017-09-15T13:00:00.000Z',
+            end: '2017-09-15T18:00:00.000Z'
+        }
+    ]);
+}
+
 function respond(request) {
     switch(request.url) {
         case '/week/current':
@@ -95,5 +129,6 @@ function respond(request) {
 module.exports = {
     getCurrentWeek: getDummyCurrentWeek,
     respond: respond,
-    getWeekTemplate: getWeekTemplate
+    getWeekTemplate: getWeekTemplate,
+    getDummyDateRange: getDummyDateRange,
 };

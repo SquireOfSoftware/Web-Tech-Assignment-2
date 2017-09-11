@@ -45,6 +45,12 @@ app.get(REST_PREFIX + '/week/current', function(req, res, next) {
     });
 });
 
+app.get(REST_PREFIX + '/date', function(req, res) {
+    services.getDummyDateRange(req, function(result) {
+        res.json(result);
+    });
+});
+
 app.get(REST_PREFIX + '/week/:id', function(req, res, next) {
     console.log(req.url);
     res.json({});

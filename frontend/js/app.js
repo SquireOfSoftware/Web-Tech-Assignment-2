@@ -22,16 +22,34 @@ app.controller("calendarCtrl", function($scope, $http) {
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         },
+        //scrollTime: "08:00:00",
+
+        minTime: "08:00:00",
+        maxTime: "18:00:00",
+
+        firstDay: 1,
         editable: false,
         contentHeight: 600,
+        eventSources: [
+            {
+                url: SERVER_URL + REST_API_URL + "date",
+                type: 'GET',
+                error: function(error) {
+                    console.log(error);
+                },
+                color: 'yellow'
+            }
+        ],
     };
+
+    $('.timetable').fullCalendar(options);
 
     $scope.init = function() {
 
 
         //$('.timetable').fullCalendar();
 
-        queryServer();
+        //queryServer();
     };
 
     function queryServer() {
@@ -41,8 +59,11 @@ app.controller("calendarCtrl", function($scope, $http) {
                 if (error) {
                     console.log(error);
                 } else {
+                    // https://fullcalendar.io/docs/event_data/events_json_feed/
+                    // should be an array with title, start, end
+                    // times need to be in ISO format
                     console.log("test");
-                    options.
+                    options.events = response.target;
                     $scope.hasLoaded = true;
                 }
             })
