@@ -1,20 +1,13 @@
 let app = angular.module("myApp", []);
-app.controller("calendarCtrl", function($scope, $http) {
+
+const REST_API_URL = "rest/1/";
+const SERVER_URL = "http://localhost:3000/";
+
+app.controller("calendarCtrl", function($scope, $http, messageService) {
     $scope.days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     $scope.hasLoaded = true;
-    $scope.error = {
-        message: "Could not load properly",
-        hide: true
-    };
 
-    $scope.success = {
-        message: "",
-        hide: true
-    };
-
-    const REST_API_URL = "rest/1/";
-    const SERVER_URL = "http://localhost:3000/";
     let options = {
         defaultView: "agendaWeek",
         header: {
@@ -22,11 +15,8 @@ app.controller("calendarCtrl", function($scope, $http) {
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         },
-        //scrollTime: "08:00:00",
-
         minTime: "08:00:00",
         maxTime: "18:00:00",
-
         firstDay: 1,
         editable: false,
         contentHeight: 600,
@@ -35,9 +25,10 @@ app.controller("calendarCtrl", function($scope, $http) {
                 url: SERVER_URL + REST_API_URL + "date",
                 type: 'GET',
                 error: function(error) {
-                    console.log(error);
+                    //console.log(error);
+                    messageService.setError("Error trying to get date: " + JSON.stringify(error));
                 },
-                color: 'yellow'
+                color: '#86df86'
             }
         ],
     };
@@ -46,33 +37,57 @@ app.controller("calendarCtrl", function($scope, $http) {
 
     $scope.init = function() {
 
+        $('.timetable').fullCalendar();
 
-        //$('.timetable').fullCalendar();
-
-        //queryServer();
     };
 
-    function queryServer() {
-        $http.get(SERVER_URL + REST_API_URL + "test")
-            .then(function (response, error) {
-                // response is a pack of days
-                if (error) {
-                    console.log(error);
-                } else {
-                    // https://fullcalendar.io/docs/event_data/events_json_feed/
-                    // should be an array with title, start, end
-                    // times need to be in ISO format
-                    console.log("test");
-                    options.events = response.target;
-                    $scope.hasLoaded = true;
-                }
-            })
-            .then(function (response) {
-                $('.timetable').fullCalendar(options);
-            });
-            // .catch(function (response) {
-            //     console.log(response);
-            // });
-    }
+});
 
+app.controller("messageCtrl", function($scope) {
+    $scope.error = {
+        message: ""
+
+    };
+
+    $scope.$on("displayError", function(event, payload) {
+        console.log("displaying error");
+        $scope.error.message = payload;
+        $("#transparent-overlay").show();
+    });
+
+    $scope.close = function() {
+        $('message').hide();
+        $('#transparent-overlay').hide();
+    };
+
+});
+
+app.controller("loginCtrl", function($scope, $http, loginService) {
+
+    $scope.email = "";
+
+    $scope.password = "";
+
+    $scope.submit = function() {
+
+        loginService.loginSubmit("");
+    }
+});
+
+app.service("messageService", function($rootScope) {
+    this.setError = function(message) {
+        $rootScope.$broadcast("displayError", message);
+    }
+});
+
+app.service("loginService", function($http, messageService) {
+    this.loginSubmit = function(base64encoding, callback) {
+        $http.post(SERVER_URL + REST_API_URL + "login", {credentials: base64encoding})
+            .then(function(response) {
+                console.log(base64encoding);
+            }, function(error) {
+                console.log("TEST");
+                messageService.setError("Problem connecting to the server, please see your error logs");
+            });
+    }
 });

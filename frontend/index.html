@@ -9,27 +9,38 @@
     <script src="./lib/moment.min.js"></script>
     <script src="./lib/popper.min.js"></script>
     <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" href="./lib/fullcalendar/fullcalendar.min.css" />
+    <link rel="stylesheet" href="./lib/fontawesome/font-awesome.min.css" />
     <script src="./lib/bootstrap-4.0.0-beta-dist/js/bootstrap.min.js"></script>
     <script src="./lib/angular.min.js"></script>
     <script src="./lib/fullcalendar/fullcalendar.min.js"></script>
-    <!--<script src="./lib/timetablejs/timetable.min.js"></script>-->
 </head>
 <body ng-app="myApp">
-    <div id="transparent-overlay" ng-hide="error.hide || success.hide">
-        <div id="success" ng-hide="!success.hide" class="message col-xs-12">
-            {{success.message}}
+    <div id="transparent-overlay" ng-controller="messageCtrl" ng-init="init()">
+        <div id="error" class="message row col-xs-12">
+            <!--Error icon-->
+            <div class="col-md-1 fa fa-5x fa-exclamation-circle"></div>
+            <div id="error-message" class="col-md-11">
+                ERROR:
+                <div>
+                    {{error.message}}
+                </div>
+            </div>
+            <div id="error-button" class="button col-md-12" ng-click="close()">
+                Close
+            </div>
         </div>
-        <div id="error" ng-hide="error.hide" class="message col-xs-12">
-            {{error.message}}
-        </div>
-
     </div>
 
-    <div id="login">
-
+    <div id="login" class="screen" ng-controller="loginCtrl">
+        <div id="login-box" class="row">
+            <input id="email-field" class=" col-sm-6 ml-auto mr-auto col-md-6" ng-model="email" placeholder="Email" type="email" />
+            <input id="password-field" class=" col-sm-6 ml-auto mr-auto col-md-6" ng-model="password" placeholder="Password" type="password" />
+            <div id="login-submission-button" class="button" ng-click="submit()">Login</div>
+        </div>
     </div>
-    <div id="viewing" ng-controller="calendarCtrl" ng-hide="!hasLoaded" ng-init="init()">
+    <div id="viewing" class="screen" ng-controller="calendarCtrl" ng-hide="!hasLoaded" ng-init="init()">
         <div class="timetable">
 
         </div>

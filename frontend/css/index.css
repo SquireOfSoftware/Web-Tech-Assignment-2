@@ -1,6 +1,13 @@
 /* TAGS */
 
 /* CLASS */
+.button {
+    padding: 5px;
+    width: 100%;
+    text-align: center;
+    color: #ffffff;
+}
+
 .fc-event {
     background-color: #86df86;
 }
@@ -16,6 +23,10 @@
     position: absolute;
 }
 
+.screen {
+    display: none;
+}
+
 /* IDS */
 #transparent-overlay {
     width: 100%;
@@ -28,8 +39,59 @@
 
 #error {
     background-color: red;
+    color: #ffffff;
+}
+
+#error-message {
+    word-wrap: break-word;
+    overflow-y: scroll;
+}
+
+#error-button {
+    background-color: #ffffff;
+    color: #000000;
+    bottom: 10;
 }
 
 #success {
     background-color: #86df86;
+
+}
+
+#loading {
+    background-color: yellow;
+}
+
+#login {
+    display: inherit;
+
+}
+
+#viewing {
+
+}
+
+#login-box {
+    width: 100%;
+    bottom: 50%;
+    margin: auto;
+    position: absolute;
+    /*padding-left: 20px;*/
+    /*padding-right:20px;*/
+    padding: 20px;
+    background-color: cornflowerblue;
+
+}
+
+#email-field {
+    /*width: 100%;*/
+}
+
+#password-field {
+    /*width: 100%;*/
+}
+
+#login-submission-button {
+
+    background-color: #0056b3;
 }
