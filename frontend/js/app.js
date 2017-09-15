@@ -2,6 +2,10 @@ let app = angular.module("myApp", []);
 
 const REST_API_URL = "rest/1/";
 const SERVER_URL = "http://localhost:3000/";
+const DUMMY_EMAIL = "John.smith@gmail.com";
+
+$('#viewing').show();
+$('#login').hide();
 
 app.controller("calendarCtrl", function($scope, $http, messageService) {
     $scope.days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -20,12 +24,21 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
         firstDay: 1,
         editable: false,
         contentHeight: 600,
+        // timezone: "AEST",
         eventSources: [
             {
-                url: SERVER_URL + REST_API_URL + "date",
+                url: SERVER_URL + REST_API_URL + "date?email=" + DUMMY_EMAIL,
                 type: 'GET',
+                startParam: "shift_start",
+                endParam: "shift_end",
+
+                data: {
+                    shift_end: "shift_end",
+                    shift_start: "shift_start"
+                },
                 error: function(error) {
                     //console.log(error);
+                    // gotta figure out how to parse out the json data
                     messageService.setError("Error trying to get date: " + JSON.stringify(error));
                 },
                 color: '#86df86'
@@ -33,11 +46,11 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
         ],
     };
 
-    $('.timetable').fullCalendar(options);
+    //$('.timetable').fullCalendar(options);
 
     $scope.init = function() {
 
-        $('.timetable').fullCalendar();
+        $('.timetable').fullCalendar(options);
 
     };
 

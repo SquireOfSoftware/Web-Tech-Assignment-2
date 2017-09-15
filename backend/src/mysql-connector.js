@@ -21,7 +21,7 @@ module.exports = {
 
             } else {
 
-                console.log(rows);
+                //console.log(rows);
                 result = rows;
 
                 callback(result);

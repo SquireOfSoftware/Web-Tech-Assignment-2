@@ -46,7 +46,11 @@ app.get(REST_PREFIX + '/week/current', function(req, res, next) {
 });
 
 app.get(REST_PREFIX + '/date', function(req, res) {
-    services.getDummyDateRange(req, function(result) {
+    // services.getDummyDateRange(req, function(result) {
+    //     res.json(result);
+    // });
+    console.log(req.url);
+    services.getDateRangeForAUser(req, function(result) {
         res.json(result);
     });
 });
@@ -60,7 +64,7 @@ app.get(REST_PREFIX + '/login', function(req, res, next) {
         console.log("login has been attempted");
         next()
     },  function( req, res) {
-        var options = {
+        let options = {
             // cannot use '-' in file paths should change project folder name
             // temporary static path
             root:'/home/mminchenko/Public/'

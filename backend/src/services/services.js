@@ -1,4 +1,5 @@
 require('module');
+const mysqlConnector = require('./../mysql-connector');
 
 function getWeekFromDate(date) {
     // should get "2017-09-04T14:00:00.000Z"
@@ -117,6 +118,38 @@ function getDummyDateRange(req, callback) {
     ]);
 }
 
+function getDateRangeForAUser(req, callback) {
+    console.log(req.query);
+
+    let email = req.query.email;
+    let startDate = req.query.shift_start;
+    let endDate = req.query.shift_end;
+    // please sanitise this
+
+    //mysqlConnector.query("select shift_start, shift_end, User.first_name, User.last_name from Shift, User\n" +
+    //    "where (User.user_id = Shift.user_id) and (User.email LIKE \"%" + email + "%\");",
+    mysqlConnector.query("select shift_start, shift_end, User.first_name, User.last_name, Role.role_name from Shift, User, Role\n" +
+        "where (User.user_id = Shift.user_id) and (User.email LIKE \"%" + email +  "%\") and \n" +
+        "(Shift.shift_start < \"" + endDate + "\") and \n" +
+        "(Shift.shift_end > \"" + startDate + "\") and \n" +
+        "(Role.role_id = Shift.role_id);",
+        function(result) {
+            let output = [];
+            for(let i = 0; i < result.length; i++ ) {
+                output.push(parseToTimetableJSInput(result[i]));
+            }
+            callback(output);
+        });
+}
+
+function parseToTimetableJSInput(rawData) {
+    return {
+        title: rawData.first_name + " " + rawData.last_name,
+        start: rawData.shift_start + "+10:00",
+        end: rawData.shift_end + "+10:00"
+    };
+}
+
 function respond(request) {
     switch(request.url) {
         case '/week/current':
@@ -131,4 +164,5 @@ module.exports = {
     respond: respond,
     getWeekTemplate: getWeekTemplate,
     getDummyDateRange: getDummyDateRange,
+    getDateRangeForAUser: getDateRangeForAUser
 };
