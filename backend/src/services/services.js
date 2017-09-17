@@ -143,10 +143,12 @@ function getDateRangeForAUser(req, callback) {
 }
 
 function parseToTimetableJSInput(rawData) {
+    const AEST = "+10:00";
     return {
-        title: rawData.first_name + " " + rawData.last_name,
-        start: rawData.shift_start + "+10:00",
-        end: rawData.shift_end + "+10:00"
+        //title: rawData.first_name + " " + rawData.last_name,
+        title: rawData.role_name + "(" + rawData.first_name + " " + rawData.last_name + ")",
+        start: rawData.shift_start + AEST,
+        end: rawData.shift_end + AEST
     };
 }
 
