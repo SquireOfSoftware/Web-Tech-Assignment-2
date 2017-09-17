@@ -5,20 +5,26 @@ const HELLO_WORLD = function() {
 
 HELLO_WORLD();
 
-const BODY = document.getElementById("body");
+const BODY = document.getElementById("week");
 
-BODY.innerHTML = "HELLO WORLD";
+const REST_API_URL = "rest/1/";
 
-function queryServer() {
+function queryServer(url, callback) {
     // try and visit localhost:3000
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", "http://localhost:3000", true);
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", "http://localhost:3000/" + REST_API_URL + url, true);
     xmlHttp.send();
-    xmlHttp.onreadystatechange = processRequest;
+    xmlHttp.onreadystatechange = callback;
 }
 
 function processRequest(e) {
-    console.log(e);
+    if(BODY.filled === undefined) {
+        let week = e.currentTarget.response;
+        buildTable(JSON.parse(week).days);
+        BODY.filled = true;
+    }
 }
 
-queryServer();
+//queryServer("week/current", processRequest);
+
+queryServer("test", processRequest);

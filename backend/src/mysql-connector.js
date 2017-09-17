@@ -7,7 +7,7 @@ module.exports = {
             host: 'localhost',
             user: 'root',
             password: '',
-            database: 'Drone_Surveying_System'
+            database: 'scheduledb'
         });
 
         let result = {};
@@ -15,12 +15,19 @@ module.exports = {
         connection.connect();
 
         connection.query(queryString, function (err, rows, fields) {
-            if (err) throw err;
+            if (err) {
+                callback({message: "There is a problem with the database"}, true);
+                connection.end();
 
-            console.log(rows);
-            result = rows;
+            } else {
 
-            callback(result);
+                //console.log(rows);
+                result = rows;
+
+                callback(result);
+
+                connection.end();
+            }
         });
     }
 };

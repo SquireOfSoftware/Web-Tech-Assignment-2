@@ -4,11 +4,84 @@
     <meta charset="UTF-8">
     <title>Web Technologies - Group 2</title>
     <link rel="stylesheet" href="./css/index.css" >
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/jquery-ui.min.js"></script>
+    <script src="./lib/moment.min.js"></script>
+    <script src="./lib/popper.min.js"></script>
+    <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./lib/bootstrap-4.0.0-beta-dist/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="./lib/fullcalendar/fullcalendar.min.css" />
+    <link rel="stylesheet" href="./lib/fontawesome/font-awesome.min.css" />
+    <script src="./lib/bootstrap-4.0.0-beta-dist/js/bootstrap.min.js"></script>
+    <script src="./lib/angular.min.js"></script>
+    <script src="./lib/fullcalendar/fullcalendar.min.js"></script>
 </head>
-<body id="body">
+<body ng-app="myApp">
+    <div id="transparent-overlay" class="screen" ng-controller="messageCtrl" ng-init="init()">
+        <div id="error" class="message row col-xs-12">
+            <!--Error icon-->
+            <div class="col-md-1 fa fa-5x fa-exclamation-circle"></div>
+            <div id="error-message" class="col-md-11">
+                ERROR:
+                <div>
+                    {{error.message}}
+                </div>
+            </div>
+            <div id="error-button" class="button col-md-12" ng-click="close()">
+                Close
+            </div>
+        </div>
+    </div>
 
+    <div id="login" class="screen" ng-controller="loginCtrl">
+        <div id="login-box" class="row">
+            <input id="email-field" class=" col-sm-6 ml-auto mr-auto col-md-6" ng-model="email" placeholder="Email" type="email" />
+            <input id="password-field" class=" col-sm-6 ml-auto mr-auto col-md-6" ng-model="password" placeholder="Password" type="password" />
+            <div id="login-submission-button" class="button" ng-click="submit()">Login</div>
+        </div>
+    </div>
+
+    <div id="viewing" class="screen" ng-controller="calendarCtrl" ng-init="init()">
+        <div class="timetable">
+
+        </div>
+    </div>
+
+    <div id="editing" class="screen" ng-controller="editingCtrl">
+        <div>
+            EDITING
+        </div>
+    </div>
+
+    <div id="profile" class="screen" ng-controller="profileCtrl">
+        <div>
+            PROFILE
+        </div>
+    </div>
+
+    <div id="info" class="screen" ng-controller="profileCtrl">
+        <div>
+            INFO
+        </div>
+    </div>
+
+    <div id="menu-bar" ng-controller="menuCtrl">
+        <div id="icon-holder">
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+        </div>
+    </div>
+
+    <footer>
+        <script src="./js/app.js"></script>
+        <script src="js/menuController.js"></script>
+        <script src="./js/messageService.js"></script>
+        <script src="./js/loginService.js"></script>
+        <script src="./js/editingService.js"></script>
+        <script src="./js/profileService.js"></script>
+        <script src="./js/calendar.js"></script>
+    </footer>
 </body>
-<footer>
-    <script src="./js/index.js"></script>
-</footer>
 </html>
