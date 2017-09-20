@@ -5,7 +5,7 @@ app.service("loginService", function($http, messageService) {
             .then(function(response) {
                 console.log(base64encoding);
             }, function(error) {
-                console.log("TEST");
+                console.log(error);
                 messageService.setError("Problem connecting to the server, please see your error logs");
             });
     }

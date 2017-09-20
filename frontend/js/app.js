@@ -5,5 +5,5 @@ const SERVER_URL = "http://localhost:3000/";
 const DUMMY_EMAIL = "John.smith@gmail.com";
 
 $('.screen').hide();
-$('#login').show();
-//$('#viewing').show();
+//$('#login').show();
+$('#viewing').show();

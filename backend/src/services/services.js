@@ -1,5 +1,6 @@
 require('module');
 const mysqlConnector = require('./../mysql-connector');
+const moment = require('moment');
 
 function getWeekFromDate(date) {
     // should get "2017-09-04T14:00:00.000Z"
@@ -143,13 +144,88 @@ function getDateRangeForAUser(req, callback) {
 }
 
 function parseToTimetableJSInput(rawData) {
-    const AEST = "+10:00";
+    //const AEST = "";
+
+    let startDate = moment(rawData.shift_start.toUTCString());
+    let endDate = moment(rawData.shift_end.toUTCString());
+
+    console.log(startDate);
+
     return {
         //title: rawData.first_name + " " + rawData.last_name,
-        title: rawData.role_name + "(" + rawData.first_name + " " + rawData.last_name + ")",
-        start: rawData.shift_start + AEST,
-        end: rawData.shift_end + AEST
+        title: rawData.role_name,
+        description: "(" + rawData.first_name + " " + rawData.last_name + ")",
+        start: startDate.add(10, 'hours'),//moment(startDate + startDate.add(9, 'hours')),
+        end: endDate.add(10, 'hours') //moment(endDate + endDate.getHours().add(9, 'hours'))
     };
+}
+
+function insertDates(req, callback) {
+    // check for valid user
+    // check for any dates, ideally should not duplicate
+    // insert into db
+    console.log(req.query.email);
+    mysqlConnector.query("select User.email, User.user_id from User where User.email = '" + req.query.email + "';", function(result, error) {
+        if (error || result.length === 0) {
+            callback("Could not find user", true);
+            return;
+        }
+        console.log(result);
+        //callback("Found user", false);
+        let userId = result[0].user_id;
+        console.log(userId);
+        let insertionData = req.body.newEvents;
+        console.log(insertionData);
+        mysqlConnector.query("select * from Shift where Shift.user_id = '" + userId + "'", function(result, error) {
+            if (error) {
+                callback("Could not locate the database", true);
+                return;
+            } else {//if (result.length !== 0) {
+                console.log("up to insertion");
+                for (let i = 0; i < insertionData.length; i++) {
+                    // assumes the role already exists
+                    let item = insertionData[i];
+                    let query = "insert into shift (shift_start, shift_end, user_id, role_id, approved)" +
+                            " values ('" + item.start + "','" + item.end + "'," + userId + "," + 1 + "," + "FALSE" + ")";
+                    console.log(query);
+                    mysqlConnector.query(query, function(result, error) {
+                        if (error) {
+                            callback("Could not locate the database", true);
+                        } else {
+                            callback("SUCCESS!", false);
+                        }
+                    });
+                }
+
+                //callback("SUCCESS!", false);
+
+                //
+                // insertionData.forEach(function(item) {
+                //     let query = "insert into shift (shift_start, shift_end, user_id, role_id, approved)" +
+                //         " values (" + item.start + "," + item.end + "," + userId + "," + 1 + "," + "FALSE" + ")";
+                //     console.log(query);
+                //     mysqlConnector.query(query, function(result, error) {
+                //         if (error) {
+                //             callback("Could not locate the database", true);
+                //         } else {
+                //             callback("SUCCESS!", false);
+                //         }
+                //     });
+                // });
+                //callback("not finished yet", true);
+            }
+        })
+    })
+}
+
+function getRoles(callback) {
+    mysqlConnector.query("select role_name, role_description from Role", function(result, error) {
+        if (error) {
+            callback("Could not locate any roles", true);
+        } else {
+            callback(result, false);
+        }
+    })
 }
 
 function respond(request) {
@@ -166,5 +242,7 @@ module.exports = {
     respond: respond,
     getWeekTemplate: getWeekTemplate,
     getDummyDateRange: getDummyDateRange,
-    getDateRangeForAUser: getDateRangeForAUser
+    getDateRangeForAUser: getDateRangeForAUser,
+    insertDates: insertDates,
+    getRoles: getRoles
 };
