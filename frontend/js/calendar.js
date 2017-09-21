@@ -20,7 +20,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
         snapDuration: moment.duration(30, 'minutes'),
         eventSources: [
             {
-                url: SERVER_URL + REST_API_URL + "date?email=" + DUMMY_EMAIL,
+                url: SERVER_URL + REST_API_URL + "date", //?email=" + DUMMY_EMAIL,
                 type: 'GET',
                 startParam: "shift_start",
                 endParam: "shift_end",
@@ -38,7 +38,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
         ],
         eventRender: function(event, element) {
             if (event.description !== undefined) {
-                element.find('.fc-title').append("<br/>" + event.description);
+                element.find('.fc-title').append("<br/>"+ event.approval + "<br/>" + event.description);
             }
         }
     };

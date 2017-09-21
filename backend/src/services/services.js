@@ -131,7 +131,7 @@ function getDateRange(req, callback) {
     let endDate = mysqlConnector.santise(req.query.shift_end);
     // please sanitise this
 
-    let query = "select shift_start, shift_end, User.first_name, User.last_name, Role.role_name from Shift, User, Role where (User.user_id = Shift.user_id) " +
+    let query = "select shift_start, shift_end, User.first_name, User.last_name, Role.role_name, approved from Shift, User, Role where (User.user_id = Shift.user_id) " +
         "and (Role.role_id = Shift.role_id)";
 
     console.log(email);
@@ -164,8 +164,10 @@ function getDateRange(req, callback) {
 function parseToTimetableJSInput(rawData) {
     let startDate = moment(rawData.shift_start.toUTCString());
     let endDate = moment(rawData.shift_end.toUTCString());
+    let approved = (rawData.approved != 0) ? "approved": "unapproved";
 
     return {
+        approval: "[" + approved + "]",
         title: rawData.role_name,
         description: "(" + rawData.first_name + " " + rawData.last_name + ")",
         start: startDate.add(10, 'hours'),
@@ -178,13 +180,11 @@ function insertDates(req, callback) {
     // check for any dates, ideally should not duplicate
     // insert into db
     console.log(req.query.email);
-    mysqlConnector.query("select User.email, User.user_id from User where User.email = '" + req.query.email + "';", function(result, error) {
+    mysqlConnector.query("select User.email, User.user_id from User where User.email = " + mysqlConnector.santise(req.query.email) + ";", function(result, error) {
         if (error || result.length === 0) {
             callback("Could not find user", true);
             return;
         }
-        console.log(result);
-        //callback("Found user", false);
         let userId = result[0].user_id;
         console.log(userId);
         let insertionData = req.body.newEvents;
