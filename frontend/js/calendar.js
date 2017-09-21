@@ -65,6 +65,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
             {newEvents: newEvents})
             .then(function(success) {
                 console.log("woot");
+                newEvents = [];
             }, function(error) {
                 console.log("booo");
             });
@@ -85,10 +86,9 @@ app.controller("calendarCtrl", function($scope, $http, messageService) {
         return {
             title: "Welcoming",
             description: "HELLO",
-            start: nearestHalfHour,//.toUTCString(),
-            end: nearestHalfHour,//.toUTCString(),
-            editable: true,
-            //snapMinutes: 30
+            start: nearestHalfHour,
+            end: nearestHalfHour,
+            editable: true
         }
     }
 

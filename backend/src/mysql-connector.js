@@ -29,5 +29,8 @@ module.exports = {
                 connection.end();
             }
         });
+    },
+    santise: (text) => {
+        return mysql.escape(text);
     }
 };

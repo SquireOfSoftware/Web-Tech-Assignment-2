@@ -119,21 +119,39 @@ function getDummyDateRange(req, callback) {
     ]);
 }
 
-function getDateRangeForAUser(req, callback) {
+function isValid(text) {
+    return text !== "" && text !== "NULL" && text !== undefined;
+}
+
+function getDateRange(req, callback) {
     console.log(req.query);
 
-    let email = req.query.email;
-    let startDate = req.query.shift_start;
-    let endDate = req.query.shift_end;
+    let email = mysqlConnector.santise(req.query.email);
+    let startDate = mysqlConnector.santise(req.query.shift_start);
+    let endDate = mysqlConnector.santise(req.query.shift_end);
     // please sanitise this
 
-    //mysqlConnector.query("select shift_start, shift_end, User.first_name, User.last_name from Shift, User\n" +
-    //    "where (User.user_id = Shift.user_id) and (User.email LIKE \"%" + email + "%\");",
-    mysqlConnector.query("select shift_start, shift_end, User.first_name, User.last_name, Role.role_name from Shift, User, Role\n" +
-        "where (User.user_id = Shift.user_id) and (User.email LIKE \"%" + email +  "%\") and \n" +
-        "(Shift.shift_start < \"" + endDate + "\") and \n" +
-        "(Shift.shift_end > \"" + startDate + "\") and \n" +
-        "(Role.role_id = Shift.role_id);",
+    let query = "select shift_start, shift_end, User.first_name, User.last_name, Role.role_name from Shift, User, Role where (User.user_id = Shift.user_id) " +
+        "and (Role.role_id = Shift.role_id)";
+
+    console.log(email);
+    if (isValid(email)) {
+        query += ' and (User.email LIKE ' + email +  ')';
+    }
+
+    if (isValid(startDate) && isValid(endDate)) {
+        query += ' and (Shift.shift_start < ' + (endDate) + ')\n';
+        query += ' and (Shift.shift_end > ' + (startDate) + ')\n';
+    }
+
+    if (!isValid(startDate) || !isValid(endDate)) {
+        query += " limit 10";
+    }
+
+    query += ";";
+
+    console.log(query);
+    mysqlConnector.query(query,
         function(result) {
             let output = [];
             for(let i = 0; i < result.length; i++ ) {
@@ -144,19 +162,14 @@ function getDateRangeForAUser(req, callback) {
 }
 
 function parseToTimetableJSInput(rawData) {
-    //const AEST = "";
-
     let startDate = moment(rawData.shift_start.toUTCString());
     let endDate = moment(rawData.shift_end.toUTCString());
 
-    console.log(startDate);
-
     return {
-        //title: rawData.first_name + " " + rawData.last_name,
         title: rawData.role_name,
         description: "(" + rawData.first_name + " " + rawData.last_name + ")",
-        start: startDate.add(10, 'hours'),//moment(startDate + startDate.add(9, 'hours')),
-        end: endDate.add(10, 'hours') //moment(endDate + endDate.getHours().add(9, 'hours'))
+        start: startDate.add(10, 'hours'),
+        end: endDate.add(10, 'hours')
     };
 }
 
@@ -196,23 +209,6 @@ function insertDates(req, callback) {
                         }
                     });
                 }
-
-                //callback("SUCCESS!", false);
-
-                //
-                // insertionData.forEach(function(item) {
-                //     let query = "insert into shift (shift_start, shift_end, user_id, role_id, approved)" +
-                //         " values (" + item.start + "," + item.end + "," + userId + "," + 1 + "," + "FALSE" + ")";
-                //     console.log(query);
-                //     mysqlConnector.query(query, function(result, error) {
-                //         if (error) {
-                //             callback("Could not locate the database", true);
-                //         } else {
-                //             callback("SUCCESS!", false);
-                //         }
-                //     });
-                // });
-                //callback("not finished yet", true);
             }
         })
     })
@@ -242,7 +238,7 @@ module.exports = {
     respond: respond,
     getWeekTemplate: getWeekTemplate,
     getDummyDateRange: getDummyDateRange,
-    getDateRangeForAUser: getDateRangeForAUser,
+    getDateRange: getDateRange,
     insertDates: insertDates,
     getRoles: getRoles
 };
