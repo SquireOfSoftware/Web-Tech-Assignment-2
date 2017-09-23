@@ -36,7 +36,7 @@
 }
 
 /* IDS */
-#transparent-overlay {
+#transparent-overlay, #prompt-overlay {
     width: 100%;
     height: 100%;
     z-index: 100;
@@ -87,7 +87,21 @@
     position: absolute;
     padding: 20px;
     background-color: cornflowerblue;
+}
 
+/*#prompt-overlay {*/
+    /*background-color: rgba(0, 0, 0, 0.2);*/
+    /*display: none;*/
+    /*z-index: 10;*/
+/*}*/
+
+#date-prompt {
+    z-index: 10;
+    background-color: dodgerblue;
+    color: white;
+
+    max-height: 20%;
+    min-height: initial;
 }
 
 #email-field {

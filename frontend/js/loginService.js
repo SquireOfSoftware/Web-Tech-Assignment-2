@@ -4,11 +4,16 @@ app.service("loginService", function($http, messageService) {
         $http.post(SERVER_URL + REST_API_URL + "login", {credentials: base64encoding})
             .then(function(response) {
                 console.log(base64encoding);
+                if (response.canEdit) {
+                    canEdit = true;
+                }
             }, function(error) {
                 console.log(error);
                 messageService.setError("Problem connecting to the server, please see your error logs");
             });
-    }
+    };
+
+    this.canEdit = true;
 });
 
 app.controller("loginCtrl", function($scope, $http, loginService) {
