@@ -51,17 +51,6 @@ app.get(REST_PREFIX + '/date', function(req, res) {
     });
 });
 
-app.post(REST_PREFIX + "/date", function(req, res) {
-    console.log(req.url);
-    console.log(req.body);
-    services.insertDates(req, function(message, error) {
-        if (error) {
-            res.status = 422;
-        }
-        res.json(message);
-    });
-});
-
 app.get(REST_PREFIX + '/week/:id', function(req, res, next) {
     console.log(req.url);
     res.json({});
@@ -83,10 +72,28 @@ app.post(REST_PREFIX + '/login', function(req, res, next) {
 app.get(REST_PREFIX + '/roles', function(req, res) {
     services.getRoles(function(result, error) {
         if (error) {
-            res.status = 404;
+            res.status = 406;
         }
         res.json(result);
     })
+});
+
+app.get(REST_PREFIX + '/users', function(req, res) {
+    services.getUsers(function(result, error) {
+        if (error) {
+            res.status = 406;
+        }
+        res.json(result);
+    })
+});
+
+app.post(REST_PREFIX + "/insert", function(req, res) {
+    services.insert(req, function(result, error) {
+        if (error) {
+            res.status = 406;
+        }
+        res.json(result);
+    });
 });
 
 app.listen(port, function () {

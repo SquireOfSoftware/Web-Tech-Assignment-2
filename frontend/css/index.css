@@ -13,7 +13,13 @@
 }
 
 .fc-button {
-    background-color: #1e7e34;
+    background-color: limegreen;
+    background-image: initial;
+}
+
+.fc-state-active {
+    background-color: darkgreen;
+    color: white;
 }
 
 .icon {
@@ -118,16 +124,16 @@
 }
 
 #menu-bar {
-    position: fixed;
-    height: 58px;
+    /*position: fixed;*/
+    /*height: 58px;*/
     overflow-x: scroll;
-    bottom: 0;
+    top: 0;
     width: 100%;
     z-index: 10;
     background-color: white;
 }
 
 #icon-holder {
-    position: absolute;
+    /*position: absolute;*/
     display: inline-flex;
 }

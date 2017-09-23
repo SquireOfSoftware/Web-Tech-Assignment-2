@@ -131,10 +131,9 @@ function getDateRange(req, callback) {
     let endDate = mysqlConnector.santise(req.query.shift_end);
     // please sanitise this
 
-    let query = "select shift_start, shift_end, User.first_name, User.last_name, Role.role_name, approved from Shift, User, Role where (User.user_id = Shift.user_id) " +
-        "and (Role.role_id = Shift.role_id)";
+    let query = "select shift_start, shift_end, User.first_name, User.last_name, Role.role_name, Role.role_description, approved from Shift, User, Role where (User.user_id = Shift.user_id) " +
+        "and (Role.role_id = Shift.role_id) and (Shift.active = TRUE)";
 
-    console.log(email);
     if (isValid(email)) {
         query += ' and (User.email LIKE ' + email +  ')';
     }
@@ -164,64 +163,56 @@ function getDateRange(req, callback) {
 function parseToTimetableJSInput(rawData) {
     let startDate = moment(rawData.shift_start.toUTCString());
     let endDate = moment(rawData.shift_end.toUTCString());
-    let approved = (rawData.approved != 0) ? "approved": "unapproved";
+    //let approved = (rawData.approved != 0) ? "approved": "unapproved";
 
     return {
-        approval: "[" + approved + "]",
+        approval: rawData.approved,
         title: rawData.role_name,
-        description: "(" + rawData.first_name + " " + rawData.last_name + ")",
+        role_description: rawData.role_description,
         start: startDate.add(10, 'hours'),
-        end: endDate.add(10, 'hours')
+        end: endDate.add(10, 'hours'),
+        employee: rawData.first_name + " " + rawData.last_name
     };
 }
 
-function insertDates(req, callback) {
-    // check for valid user
-    // check for any dates, ideally should not duplicate
-    // insert into db
-    console.log(req.query.email);
-    mysqlConnector.query("select User.email, User.user_id from User where User.email = " + mysqlConnector.santise(req.query.email) + ";", function(result, error) {
-        if (error || result.length === 0) {
-            callback("Could not find user", true);
-            return;
+function insert(req, callback) {
+
+    let insertionData = req.body.newEvents;
+    for (let i = 0; i < insertionData.length; i++) {
+        insertSingleItem(insertionData[i], callback);
+    }
+    callback("SUCCESS!", false);
+}
+
+function insertSingleItem(item, callback) {
+    let query = "insert into shift (shift_start, shift_end, user_id, role_id, approved, active)" +
+        " values ('" + item.start + "','" + item.end + "'," + item.user.user_id + "," + item.role.role_id + "," + "FALSE" + "," + "TRUE" + ")";
+    console.log(query);
+    mysqlConnector.query(query, function(result, error) {
+        if (error) {
+            callback("Could not locate the database", true);
         }
-        let userId = result[0].user_id;
-        console.log(userId);
-        let insertionData = req.body.newEvents;
-        console.log(insertionData);
-        mysqlConnector.query("select * from Shift where Shift.user_id = '" + userId + "'", function(result, error) {
-            if (error) {
-                callback("Could not locate the database", true);
-                return;
-            } else {//if (result.length !== 0) {
-                console.log("up to insertion");
-                for (let i = 0; i < insertionData.length; i++) {
-                    // assumes the role already exists
-                    let item = insertionData[i];
-                    let query = "insert into shift (shift_start, shift_end, user_id, role_id, approved)" +
-                            " values ('" + item.start + "','" + item.end + "'," + userId + "," + 1 + "," + "FALSE" + ")";
-                    console.log(query);
-                    mysqlConnector.query(query, function(result, error) {
-                        if (error) {
-                            callback("Could not locate the database", true);
-                        } else {
-                            callback("SUCCESS!", false);
-                        }
-                    });
-                }
-            }
-        })
-    })
+    });
 }
 
 function getRoles(callback) {
-    mysqlConnector.query("select role_name, role_description from Role", function(result, error) {
+    mysqlConnector.query("select role_id, role_name, role_description from Role", function(result, error) {
         if (error) {
             callback("Could not locate any roles", true);
         } else {
             callback(result, false);
         }
-    })
+    });
+}
+
+function getUsers(callback) {
+    mysqlConnector.query("select user_id, first_name, last_name, email from User", function(result, error) {
+        if (error) {
+            callback("Could not locate any users", true);
+        } else {
+            callback(result, false);
+        }
+    });
 }
 
 function respond(request) {
@@ -239,6 +230,7 @@ module.exports = {
     getWeekTemplate: getWeekTemplate,
     getDummyDateRange: getDummyDateRange,
     getDateRange: getDateRange,
-    insertDates: insertDates,
-    getRoles: getRoles
+    getRoles: getRoles,
+    getUsers: getUsers,
+    insert: insert
 };

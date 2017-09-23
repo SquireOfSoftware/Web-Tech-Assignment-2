@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Web Technologies - Group 2</title>
-    <link rel="stylesheet" href="./css/index.css" >
     <script src="./lib/jquery.min.js"></script>
     <script src="./lib/jquery-ui.min.js"></script>
     <script src="./lib/moment.min.js"></script>
@@ -15,6 +14,8 @@
     <script src="./lib/bootstrap-4.0.0-beta-dist/js/bootstrap.min.js"></script>
     <script src="./lib/angular.min.js"></script>
     <script src="./lib/fullcalendar/fullcalendar.min.js"></script>
+
+    <link rel="stylesheet" href="./css/index.css" >
 </head>
 <body ng-app="myApp">
     <div id="transparent-overlay" class="screen" ng-controller="messageCtrl" ng-init="init()">
@@ -42,8 +43,11 @@
                 </div>
                 <div class="col-md-12">
                     <label for="roleDropdown">Please select a role:</label>
-                    <select ng-model="selectedRole.id" id="roleDropdown" class="col-md-12" ng-options="role.name for role in roles">
-                        <option ng-repeat="role in roles" value="{{role.id}}" ng-selected="role.id === '1">{{role.name}}</option>
+                    <select ng-model="selectedRole" id="roleDropdown" class="col-md-6">
+                        <option ng-repeat="role in roles" ng-value="{{role}}">{{role.role_name}}</option>
+                    </select>
+                    <select ng-model="selectedUser" id="userDropdown" class="col-md-6">
+                        <option ng-repeat="user in users" ng-value="{{user}}">{{user.first_name}} {{user.last_name}}</option>
                     </select>
                 </div>
             </div>
@@ -55,6 +59,32 @@
                     Save
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <div id="menu-bar" ng-controller="menuCtrl">
+        <div id="icon-holder">
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
+            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
+            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
+            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
         </div>
     </div>
 
@@ -89,15 +119,6 @@
     <div id="info" class="screen" ng-controller="profileCtrl">
         <div>
             INFO
-        </div>
-    </div>
-
-    <div id="menu-bar" ng-controller="menuCtrl">
-        <div id="icon-holder">
-            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
-            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
-            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
-            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
         </div>
     </div>
 

@@ -1,21 +1,22 @@
-app.controller("calendarCtrl", function($scope, $http, messageService, dateService, loginService) {
+app.controller("calendarCtrl", function($scope, $http, messageService, dataService, loginService) {
     $scope.days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     $scope.hasLoaded = true;
 
     let options = {
         defaultView: "agendaWeek",
-        header: {
+        footer: {
             left: 'prev,next today',
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         },
+        header: false,
         minTime: "08:00:00",
         //maxTime: "18:00:00",
         firstDay: 1, // monday
         //editable: false,
         allDaySlot:false,
-        contentHeight: 600,
+        contentHeight: 500,
         timezone: "local",
         snapDuration: moment.duration(30, 'minutes'),
         eventSources: [
@@ -31,7 +32,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dateServi
                 editable: false,
                 error: function(error) {
                     // gotta figure out how to parse out the json data
-                    messageService.setError("Error trying to get date: " + JSON.stringify(error));
+                    //messageService.setError("Error trying to get date: " + JSON.stringify(error));
                 },
                 color: '#86df86'
             }
@@ -39,41 +40,56 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dateServi
         // this method can create events
         dayClick: function(event, jsEvent, view) {
             if (loginService.canEdit) {
-                console.log(event.toISOString());
-                //addEvent(event);
-                dateService.setDetails(event);
-                dateService.showPrompt(event);
+                dataService.setDetails(event);
+                dataService.showPrompt(event);
             }
         },
         eventRender: function(event, element) {
-            if (event.description !== undefined) {
+            if (event !== undefined) {
 
-                let approval = event.approval ? "approved": "unapproved";
-
-                element.find('.fc-title').append("<br/>"+ approval + "<br/>" + event.description);
+                let approval = event.approval ? "Approved": "Unapproved";
+                element.find('.fc-title').append("<br/>"+
+                    approval + "<br/>" +
+                    event.role_description + "<br/>" +
+                    event.employee
+                );
             }
         },
-        viewDestroy: function(view, element) {
+        eventDragStop: function(event, jsEvent, ui, view) {
 
-            if (confirm("Are you sure?")) {
-
-            }
+            updateExistingEvent(event);
+        },
+        eventResize: function(event, delta, revertFunc) {
+            updateExistingEvent(event);
         }
     };
 
+    // need to figure out how to remove events
+    function updateExistingEvent(event) {
+        // locate event in array
+        // replace all the item in array
+        event.source = "";
+        newEvents[event.id] = event;
+    }
+
     let newEvents = [];
-    //$('.timetable').fullCalendar(options);
 
     $scope.init = function() {
         $('.timetable').fullCalendar(options);
-        //$scope.loadCalendar();
-        /*
-        $http.get(URL + "/roles")
+
+        $http.get(URL + "roles")
             .then(function(success) {
-                dateService.setRoles(success);
+                dataService.setRoles(success.data);
             }, function(error) {
                 console.log(error);
-            });*/
+            });
+
+        $http.get(URL + "users")
+            .then(function(success) {
+                dataService.setUsers(success.data);
+            }, function(error) {
+                console.log(error);
+            });
     };
 
     $scope.loadCalendar = function () {
@@ -83,23 +99,19 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dateServi
     };
 
     function addEvent(triggerEvent, data) {
-        console.log(data);
-        let newEvent = createNewEvent(data.details, data.selectedRole);
+        let newEvent = createNewEvent(data.details, data.selectedRole, data.selectedUser);
         newEvents.push(newEvent);
         $('.timetable').fullCalendar('renderEvent', newEvent);
     }
 
     $scope.sendUpdates = function () {
-        console.log(newEvents);
-        //newEvents = parseToUTC(newEvents);
-        console.log(newEvents);
-        $http.post(SERVER_URL + REST_API_URL + "date?email=" + DUMMY_EMAIL,
-            {newEvents: newEvents})
+        $http.post(URL + "insert",
+            {newEvents})
             .then(function(success) {
                 console.log("woot");
                 newEvents = [];
             }, function(error) {
-                console.log("booo");
+                console.log("booo", error);
             });
     };
 
@@ -111,24 +123,29 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dateServi
         return dates;
     }
 
-    function createNewEvent(date, role) {
+    function createNewEvent(date, role, user) {
         //let date = moment();
         let nearestHalfHour; // = moment(date).add("minutes", 30 + date.minute() % 30);
         let dateMinutes = date.minutes() % 60;
         if (dateMinutes < 15) {
-            nearestHalfHour = moment(date).subtract("minutes", dateMinutes);
+            nearestHalfHour = moment(date).subtract(dateMinutes, "minutes");
         } else if (dateMinutes < 45) {
-            nearestHalfHour = moment(date).add("minutes", 30 - dateMinutes);
+            nearestHalfHour = moment(date).add(30 - dateMinutes, "minutes");
         } else {
-            nearestHalfHour = moment(date).add("minutes", 60 - dateMinutes);
+            nearestHalfHour = moment(date).add(60 - dateMinutes, "minutes");
         }
 
-        //console.log(date.toISOString());
+        let end = moment(nearestHalfHour).add(3, "hours");
+
         return {
-            title: role.name,
-            description: "HELLO",
+            id: newEvents.length,
+            title: role.role_name,
+            role_description: role.role_description,
             start: nearestHalfHour,
-            end: nearestHalfHour,
+            end: end,
+            employee: user.first_name + " " + user.last_name,
+            user: user,
+            role: role,
             editable: true,
             approved: false,
         }
@@ -137,16 +154,22 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dateServi
     $scope.$on("createNewEvent", addEvent);
 });
 
-app.service("dateService", function($rootScope, messageService) {
-    this.roles = [{id: 1, name: "test"}];
-
+app.service("dataService", function($rootScope, messageService) {
     this.setRoles = function(roles) {
+        console.log(roles);
         this.roles = roles;
     };
 
-    this.createNewEvent = function(selectedRole) {
+    this.setUsers = function(users) {
+        this.users = users;
+    };
+
+    this.createNewEvent = function(selectedRole, selectedUser) {
         console.log(selectedRole, this.details);
-        $rootScope.$broadcast("createNewEvent", {details: this.details, selectedRole: selectedRole});
+        $rootScope.$broadcast("createNewEvent", {
+            details: this.details,
+            selectedRole: selectedRole,
+            selectedUser: selectedUser});
     };
 
     this.setDetails = function(details) {
@@ -154,25 +177,22 @@ app.service("dateService", function($rootScope, messageService) {
     };
 
     this.showPrompt = function() {
-        $rootScope.$broadcast("showDatePrompt", {});
-    };
-
-    this.showPrompt = function() {
-        $rootScope.$broadcast("showDatePrompt", {});
+        $rootScope.$broadcast("showDatePrompt");
     };
 });
 
-app.controller("dateCtrl", function($scope, messageService, dateService) {
-    //$scope.roles = [];
-    $scope.selectedRole = {id: -1, name: ""};
-    //$scope.roles = [{id: 1, name: "test"}];
-    $scope.roles = dateService.roles;
+app.controller("dateCtrl", function($scope, messageService, dataService) {
+    $scope.selectedRole;
+    $scope.selectedUser;
+    $scope.roles = dataService.roles;
+    $scope.users = dataService.users;
 
-    $scope.showPrompt = function(triggerEvent, details) {
-        //console.log(details);
-        $scope.selectedRole.id = $scope.roles[0].id;
-        $scope.selectedRole.name = $scope.roles[0].name;
-        console.log($scope.selectedRole);
+    $scope.showPrompt = function(triggerEvent) {
+        $scope.roles = dataService.roles;
+        $scope.users = dataService.users;
+
+        $scope.$apply();
+
         $("#prompt-overlay").show();
     };
 
@@ -181,8 +201,13 @@ app.controller("dateCtrl", function($scope, messageService, dateService) {
     };
 
     $scope.saveEvent = function() {
-        dateService.createNewEvent($scope.selectedRole);
-        $scope.closePrompt();
+        if ($scope.selectedRole !== undefined && $scope.selectedUser !== undefined) {
+            dataService.createNewEvent($scope.selectedRole, $scope.selectedUser);
+            $scope.closePrompt();
+            $scope.selectedRole = undefined;
+            $scope.selectedUser = undefined;
+        }
+
     };
 
     $scope.$on("closeDatePrompt", $scope.closePrompt);
