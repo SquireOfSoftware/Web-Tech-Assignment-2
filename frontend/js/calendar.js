@@ -1,7 +1,9 @@
 app.controller("calendarCtrl", function($scope, $http, messageService, dataService, loginService) {
-    $scope.days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-
     $scope.hasLoaded = true;
+
+    $scope.roles = [];
+    $scope.users = [];
+    $scope.queriedEvents = [];
 
     let options = {
         defaultView: "agendaWeek",
@@ -21,7 +23,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         snapDuration: moment.duration(30, 'minutes'),
         eventSources: [
             {
-                url: URL + "date", //?email=" + DUMMY_EMAIL,
+                url: URL + "date",
                 type: 'GET',
                 startParam: "shift_start",
                 endParam: "shift_end",
@@ -34,6 +36,9 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
                     // gotta figure out how to parse out the json data
                     //messageService.setError("Error trying to get date: " + JSON.stringify(error));
                 },
+                success: function(result) {
+                    $scope.queriedEvents = result;
+                },
                 color: '#86df86'
             }
         ],
@@ -45,15 +50,12 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
             }
         },
         eventRender: function(event, element) {
-            if (event !== undefined) {
-
-                let approval = event.approval ? "Approved": "Unapproved";
-                element.find('.fc-title').append("<br/>"+
-                    approval + "<br/>" +
-                    event.role_description + "<br/>" +
-                    event.employee
-                );
-            }
+            let approval = event.approval ? "Approved": "Unapproved";
+            element.find('.fc-title').append("<br/>"+
+                approval + "<br/>" +
+                event.role_description + "<br/>" +
+                event.employee
+            );
         },
         eventDragStop: function(event, jsEvent, ui, view) {
 
@@ -61,6 +63,9 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         },
         eventResize: function(event, delta, revertFunc) {
             updateExistingEvent(event);
+        },
+        eventClick: function(event, jsEvent) {
+            console.log(event);
         }
     };
 
@@ -73,13 +78,15 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
     }
 
     let newEvents = [];
+    let timetable = $('.timetable');
 
     $scope.init = function() {
-        $('.timetable').fullCalendar(options);
+        timetable.fullCalendar(options);
 
         $http.get(URL + "roles")
             .then(function(success) {
                 dataService.setRoles(success.data);
+                $scope.roles.push(...success.data);
             }, function(error) {
                 console.log(error);
             });
@@ -87,9 +94,10 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         $http.get(URL + "users")
             .then(function(success) {
                 dataService.setUsers(success.data);
+                $scope.users.push(...success.data);
             }, function(error) {
                 console.log(error);
-            });
+            })
     };
 
     $scope.loadCalendar = function () {
@@ -138,7 +146,7 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         let end = moment(nearestHalfHour).add(3, "hours");
 
         return {
-            id: newEvents.length,
+            event_ui_id: newEvents.length,
             title: role.role_name,
             role_description: role.role_description,
             start: nearestHalfHour,
@@ -148,10 +156,68 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
             role: role,
             editable: true,
             approved: false,
+            color: "#009fff",
         }
     }
 
     $scope.$on("createNewEvent", addEvent);
+
+    let roleFilter;
+    let userFilter;
+
+    $scope.onRoleFilterChange = function(filteredRole) {
+        // clear timetable
+        // create array that match role
+        // redraw timetable with created array
+        roleFilter = filteredRole;
+        if (roleFilter !== "") {
+            timetable.fullCalendar("removeEvents");
+            timetable.fullCalendar("renderEvents", getMatchingItems($scope.queriedEvents, function (item) {
+                if (userFilter === "" || userFilter === undefined) {
+                    return item.title === roleFilter.role_name;
+                } else {
+                    //console.log(item, userFilter);
+                    return item.title === roleFilter.role_name && item.employee === (userFilter.first_name + " " + userFilter.last_name);
+                }
+            }));
+        } else if (userFilter !== "" && userFilter !== undefined){
+            // the role filter is cleared but user filer is still there
+            $scope.onUserFilterChange(userFilter);
+        } else {
+            timetable.fullCalendar("removeEvents");
+            timetable.fullCalendar("renderEvents", $scope.queriedEvents);
+        }
+    };
+
+    $scope.onUserFilterChange = function(filteredUser) {
+        userFilter = filteredUser;
+        if (userFilter !== "") {
+            timetable.fullCalendar("removeEvents");
+            timetable.fullCalendar("renderEvents", getMatchingItems($scope.queriedEvents, function(item) {
+                if (roleFilter === "" || roleFilter === undefined) {
+                    return item.employee === (userFilter.first_name + " " + userFilter.last_name);
+                } else {
+                    return item.title === roleFilter.role_name && item.employee === (userFilter.first_name + " " + userFilter.last_name);
+                }
+            }));
+        } else if ((roleFilter !== "" && roleFilter !== undefined)){
+            // the role filter is cleared but user filer is still there
+            $scope.onRoleFilterChange(roleFilter);
+        } else {
+            timetable.fullCalendar("removeEvents");
+            timetable.fullCalendar("renderEvents", $scope.queriedEvents);
+        }
+    };
+
+    function getMatchingItems(array, matchCallback) {
+        let results = [];
+        for(let i = 0; i < array.length; i++) {
+            if (matchCallback(array[i])) {
+                results.push(array[i]);
+            }
+        }
+        return results;
+    }
 });
 
 app.service("dataService", function($rootScope, messageService) {

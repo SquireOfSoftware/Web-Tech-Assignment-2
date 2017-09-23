@@ -42,11 +42,10 @@
                     Create a new date:
                 </div>
                 <div class="col-md-12">
-                    <label for="roleDropdown">Please select a role:</label>
-                    <select ng-model="selectedRole" id="roleDropdown" class="col-md-6">
+                    <select ng-model="selectedRole" id="rolesDropdown" class="col-md-6">
                         <option ng-repeat="role in roles" ng-value="{{role}}">{{role.role_name}}</option>
                     </select>
-                    <select ng-model="selectedUser" id="userDropdown" class="col-md-6">
+                    <select ng-model="selectedUser" id="usersDropdown" class="col-md-6">
                         <option ng-repeat="user in users" ng-value="{{user}}">{{user.first_name}} {{user.last_name}}</option>
                     </select>
                 </div>
@@ -97,6 +96,18 @@
     </div>
 
     <div id="viewing" class="screen" ng-controller="calendarCtrl" ng-init="init()">
+        <div class="row col-md-12">
+            <label for="roleFilter" class="col-md-2">Roles: </label>
+            <select ng-model="role" id="roleFilter" class="col-md-4" ng-change="onRoleFilterChange(role)">
+                <option value="">All</option>
+                <option ng-repeat="role in roles" ng-value="{{role}}">{{role.role_name}}</option>
+            </select>
+            <label for="userFilter" class="col-md-2">User: </label>
+            <select ng-model="user" id="userFilter" class="col-md-4" ng-change="onUserFilterChange(user)">
+                <option value="">All</option>
+                <option ng-repeat="user in users" ng-value="{{user}}">{{user.first_name}} {{user.last_name}}</option>
+            </select>
+        </div>
         <div class="timetable">
 
         </div>
