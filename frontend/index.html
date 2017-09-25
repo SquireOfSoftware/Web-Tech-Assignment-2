@@ -34,33 +34,67 @@
         </div>
     </div>
 
-    <div id="prompt-overlay" class="" ng-controller="dateCtrl" ng-init="init()">
-        <div id="date-prompt" class="message container col-xs-12">
+    <div id="creation-prompt-overlay" class="overlay" ng-controller="dateCreationCtrl" ng-init="init()">
+        <div id="date-prompt" class="message container col-xs-12 prompt">
             <!--Error icon-->
-            <div id="" class="row">
+            <div class="row">
                 <div class="col-md-12">
-                    Create a new date:
+                    Create a new shift:
                 </div>
-                <div class="col-md-12">
-                    <select ng-model="selectedRole" id="rolesDropdown" class="col-md-6">
-                        <option ng-repeat="role in roles" ng-value="{{role}}">{{role.role_name}}</option>
+                <div class="container col-md-12 row rowFix">
+                    <label for="rolesDropdown" class="col-md-4">Role:</label>
+                    <select ng-model="selectedRole" id="rolesDropdown" class="col-md-8" ng-options="role as role.role_name for role in roles">
+                        <option value="" disabled>Select a role</option>
                     </select>
-                    <select ng-model="selectedUser" id="usersDropdown" class="col-md-6">
-                        <option ng-repeat="user in users" ng-value="{{user}}">{{user.first_name}} {{user.last_name}}</option>
+                    <label for="usersDropdown" class="col-md-4">User:</label>
+                    <select ng-model="selectedUser" id="usersDropdown" class="col-md-8" ng-options="user as (user.first_name + ' ' + user.last_name) for user in users">
+                        <option value="" disabled>Select a user</option>
                     </select>
                 </div>
             </div>
             <div class="row">
-                <div id="save-date-prompt-button" class="button col-md-6" ng-click="closePrompt()">
+                <div id="save-date-prompt-button" class="button col-md-12" ng-click="closePrompt()">
                     Cancel
                 </div>
-                <div id="close-date-prompt-button" class="button col-md-6" ng-click="saveEvent()">
+                <div id="close-date-prompt-button" class="button col-md-12" ng-click="saveEvent()">
                     Save
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="editing-prompt-overlay" class="overlay" ng-controller="dateEditingCtrl">
+        <div id="editing-prompt-window" class="prompt message container col-xs-12">
+            <div class="col-md-12">
+                <span class="fa fa-exclamation-triangle" ></span>
+                If you need to change the time or date, please drag the event.
+            </div>
+            <div class="row container rowFix">
+                <label for="editingRolesDropdown" class="col-md-4">Role:</label>
+                <select ng-model="selectedRole" id="editingRolesDropdown" class="col-md-8" ng-options="role as role.role_name for role in roles">
+                </select>
+
+                <label for="editingUsersDropdown" class="col-md-4">User:</label>
+                <select ng-model="selectedUser" id="editingUsersDropdown" class="col-md-8" ng-options="user as (user.first_name + ' ' + user.last_name) for user in users">
+                </select>
+                <label for="editingApprovalDropdown" class="col-md-4">Approval:</label>
+                <select ng-model="approved" id="editingApprovalDropdown" class="col-md-8" ng-options="approve as approve.name for approve in approvals">
+                </select>
+            </div>
+            <div class="row">
+
+                <div id="delete-button" class="button col-md-12" ng-click="deleteEvent()">
+                    Delete
+                </div>
+                <div class="button col-md-12" ng-click="closeEditingPrompt()">
+                    Cancel
+                </div>
+                <div class="button col-md-12" ng-click="saveEvent()">
+                    Update
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="menu-bar" ng-controller="menuCtrl">
         <div id="icon-holder">
@@ -68,22 +102,8 @@
             <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
             <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
             <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
-            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
-            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
-            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
-            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
-            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
-            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
-            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
-            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
-            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
-            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
-            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
-            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
-            <span class="icon fa fa-3x fa-pencil" ng-click="showEditPage()"></span>
-            <span class="icon fa fa-3x fa-calendar" ng-click="showCalendar()"></span>
-            <span class="icon fa fa-3x fa-drivers-license-o" ng-click="showProfile()"></span>
-            <span class="icon fa fa-3x fa-info" ng-click="showInfo()"></span>
+            <span class="icon fa fa-3x fa-refresh" ng-click="reload()"></span>
+            <span class="icon fa fa-3x fa-save" ng-click="sendUpdates()"></span>
         </div>
     </div>
 

@@ -38,12 +38,27 @@
     position: absolute;
 }
 
+.prompt {
+    z-index: 10;
+    color: white;
+
+    min-height: 20%;
+    min-height: initial;
+
+    background-color: white;
+    /*default color*/
+}
+
+.rowFix {
+    margin: 0;
+}
+
 .screen {
     display: none;
 }
 
 /* IDS */
-#transparent-overlay, #prompt-overlay {
+#transparent-overlay, #prompt-overlay, #editing-prompt-overlay, .overlay {
     width: 100%;
     height: 100%;
     z-index: 100;
@@ -67,6 +82,10 @@
     color: #000000;
     bottom: -10px;
     height: 10%;
+}
+
+#delete-button {
+    background-color: red;
 }
 
 #success {
@@ -96,19 +115,12 @@
     background-color: cornflowerblue;
 }
 
-/*#prompt-overlay {*/
-    /*background-color: rgba(0, 0, 0, 0.2);*/
-    /*display: none;*/
-    /*z-index: 10;*/
-/*}*/
-
 #date-prompt {
-    z-index: 10;
     background-color: dodgerblue;
-    color: white;
+}
 
-    max-height: 20%;
-    min-height: initial;
+#editing-prompt-window {
+    background-color: orange;
 }
 
 #email-field {

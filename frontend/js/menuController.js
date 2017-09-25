@@ -1,4 +1,4 @@
-app.controller("menuCtrl", function($scope, $http) {
+app.controller("menuCtrl", function($rootScope, $scope, dataService) {
     $scope.showEditPage = function() {
         hideScreens();
         $('#editing').show();
@@ -17,6 +17,14 @@ app.controller("menuCtrl", function($scope, $http) {
     $scope.showInfo = function() {
         hideScreens();
         $('#info').show();
+    };
+
+    $scope.reload = function() {
+        dataService.reload();
+    };
+
+    $scope.sendUpdates = function() {
+        $rootScope.$broadcast("sendUpdates");
     };
 
     function hideScreens() {
