@@ -7,8 +7,6 @@ function isValid(text) {
 }
 
 function getDateRange(req, callback) {
-    console.log(req.query);
-
     let email = mysqlConnector.santise(req.query.email);
     let startDate = mysqlConnector.santise(req.query.shift_start);
     let endDate = mysqlConnector.santise(req.query.shift_end);
@@ -31,22 +29,19 @@ function getDateRange(req, callback) {
     }
 
     query += ";";
-
-    console.log(query);
     mysqlConnector.query(query,
         function(result) {
             let output = [];
             for(let i = 0; i < result.length; i++ ) {
                 output.push(parseToTimetableJSInput(result[i]));
             }
-            callback(output);
+            callback(output, false);
         });
 }
 
 function parseToTimetableJSInput(rawData) {
     let startDate = moment(rawData.shift_start.toUTCString());
     let endDate = moment(rawData.shift_end.toUTCString());
-    //let approved = (rawData.approved != 0) ? "approved": "unapproved";
 
     return {
         event_id: rawData.shift_id,
@@ -72,7 +67,7 @@ function insert(req, callback) {
     for (let i = 0; i < insertionData.length; i++) {
         insertSingleItem(insertionData[i], callback);
     }
-    callback("SUCCESS!", false);
+    callback({"message": "SUCCESS!"}, false);
 }
 
 function insertSingleItem(item, callback) {
@@ -81,7 +76,7 @@ function insertSingleItem(item, callback) {
     console.log(query);
     mysqlConnector.query(query, function(result, error) {
         if (error) {
-            callback("Could not locate the database", true);
+            callback({"message": "Could not locate the database"}, true);
         }
     });
 }
@@ -89,7 +84,7 @@ function insertSingleItem(item, callback) {
 function getRoles(callback) {
     mysqlConnector.query("select role_id, role_name, role_description from Role", function(result, error) {
         if (error) {
-            callback("Could not locate any roles", true);
+            callback({"message": "Could not locate any roles"}, true);
         } else {
             callback(result, false);
         }
@@ -99,7 +94,7 @@ function getRoles(callback) {
 function getUsers(callback) {
     mysqlConnector.query("select user_id, first_name, last_name, email from User", function(result, error) {
         if (error) {
-            callback("Could not locate any users", true);
+            callback({"message": "Could not locate any users"}, true);
         } else {
             callback(result, false);
         }
@@ -114,13 +109,13 @@ function deleteShift(req, callback) {
     // search for shift id, if it exists, update to inactive
     mysqlConnector.query("select shift_id from Shift where shift_id = " + shift_id + " and active = TRUE;", function(result, error) {
         if (error || result.length === 0) {
-            callback("Could not locate any shift", true);
+            callback({"message": "Could not locate any shift"}, true);
         }
         mysqlConnector.query("update shift set active = FALSE where shift_id = " + shift_id + ";", function(result, error) {
             if (error) {
-                callback("Could not locate any shift", true);
+                callback({"message": "Could not locate any shift"}, true);
             } else {
-                callback("Delete has been executed", false);
+                callback({"message": "Delete has been executed"}, false);
             }
         });
     });
@@ -137,9 +132,11 @@ function updateShift(req, callback) {
     let start_time = mysqlConnector.santise(updatedEvent.start);
     let end_time = mysqlConnector.santise(updatedEvent.end);
     // search for shift id, if it exists, update to inactive
-    mysqlConnector.query("select shift_id from Shift where shift_id = " + shift_id + " and active = TRUE;", function(result, error) {
+
+    let shiftQuery = "select shift_id from Shift where shift_id = " + shift_id + " and active = TRUE;";
+    mysqlConnector.query(shiftQuery, function(result, error) {
         if (error || result.length === 0) {
-            callback("Could not locate any shift", true);
+            callback({"message": "Could not locate any shift"}, true);
         }
         let query = "update shift set active = TRUE, " +
             "approved = " + (approval) + ", " +
@@ -151,12 +148,27 @@ function updateShift(req, callback) {
         console.log("query: ", query);
         mysqlConnector.query(query, function(result, error) {
             if (error) {
-                callback("Could not locate any shift", true);
+                callback({"message": "Could not locate any shift"}, true);
             } else {
-                callback("Update is complete", false);
+                callback({"message": "Update is complete"}, false);
             }
         });
     });
+}
+
+function loginUser(req, callback) {
+    let email = req.body.email;
+    let password = req.body.password;
+    let loginQuery = "select email, password, can_edit from user where email = " + mysqlConnector.santise(email) + ";";
+    mysqlConnector.query(loginQuery, function(result, error) {
+        if (error || result.length === 0) {
+            callback({"message": "Could not locate any user"}, true);
+        } else if (("'" + result[0].password + "'") === mysqlConnector.santise(password)) {
+            callback({"can_edit": result[0].can_edit}, false);
+        } else {
+            callback({"message": "Could not locate any user"}, true);
+        }
+    })
 }
 
 module.exports = {
@@ -165,5 +177,6 @@ module.exports = {
     getUsers: getUsers,
     insert: insert,
     deleteShift: deleteShift,
-    updateShift: updateShift
+    updateShift: updateShift,
+    loginUser: loginUser
 };

@@ -7,5 +7,5 @@ const URL = SERVER_URL + REST_API_URL;
 const DUMMY_EMAIL = "John.smith@gmail.com";
 
 $('.screen').hide();
-//$('#login').show();
-$('#viewing').show();
+$('#login').show();
+//$('#viewing').show();

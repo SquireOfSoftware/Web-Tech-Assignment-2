@@ -17,68 +17,56 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get(REST_PREFIX + 'days/', function (req, res, next) {
-    mysqlConnector.query("select * from day;", function (result) {
-        res.json(result);
-    });
-});
-
 app.get(REST_PREFIX + 'date', function(req, res) {
     console.log(req.url);
-    services.getDateRange(req, function(result) {
-        res.json(result);
+    services.getDateRange(req, function(result, error) {
+        sendResponse(res, result, error);
     });
 });
 
-app.get(REST_PREFIX + 'week/:id', function(req, res, next) {
-    console.log(req.url);
-    res.json({});
-});
 
 app.get(REST_PREFIX + 'roles', function(req, res) {
     services.getRoles(function(result, error) {
-        if (error) {
-            res.status = 406;
-        }
-        res.json(result);
+        sendResponse(res, result, error);
     })
 });
 
 app.get(REST_PREFIX + 'users', function(req, res) {
     services.getUsers(function(result, error) {
-        if (error) {
-            res.status = 406;
-        }
-        res.json(result);
+        sendResponse(res, result, error);
     })
 });
 
 app.post(REST_PREFIX + "insert", function(req, res) {
     services.insert(req, function(result, error) {
-        if (error) {
-            res.status = 406;
-        }
-        res.json(result);
+        sendResponse(res, result, error);
     });
 });
 
 app.post(REST_PREFIX + "delete", function(req, res) {
     services.deleteShift(req, function(result, error) {
-        if (error) {
-            res.status = 406;
-        }
-        res.json(result);
+        sendResponse(res, result, error);
     });
 });
 
 app.post(REST_PREFIX + "update", function(req, res) {
     services.updateShift(req, function (result, error) {
-        if (error) {
-            res.status = 406;
-        }
-        res.json(result);
+        sendResponse(res, result, error);
     });
 });
+
+app.post(REST_PREFIX + "login", function(req, res) {
+    services.loginUser(req, function(result, error) {
+        sendResponse(res, result, error);
+    })
+});
+
+function sendResponse(response, result, error) {
+    if (error) {
+        response.status(406);
+    }
+    response.json(result);
+}
 
 app.listen(port, function () {
     console.log('CORS-enabled web server listening on port ' + port);
