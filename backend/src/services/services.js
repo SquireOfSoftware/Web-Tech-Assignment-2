@@ -10,7 +10,6 @@ function getDateRange(req, callback) {
     let email = mysqlConnector.santise(req.query.email);
     let startDate = mysqlConnector.santise(req.query.shift_start);
     let endDate = mysqlConnector.santise(req.query.shift_end);
-    // please sanitise this
 
     let query = "select User.user_id, Role.role_id, shift_id, shift_start, shift_end, User.first_name, User.last_name, Role.role_name, Role.role_description, approved from Shift, User, Role where (User.user_id = Shift.user_id) " +
         "and (Role.role_id = Shift.role_id) and (Shift.active = TRUE)";
@@ -67,7 +66,7 @@ function insert(req, callback) {
     for (let i = 0; i < insertionData.length; i++) {
         insertSingleItem(insertionData[i], callback);
     }
-    callback({"message": "SUCCESS!"}, false);
+    callback(returnMessage("SUCCESS!"), false);
 }
 
 function insertSingleItem(item, callback) {
@@ -76,7 +75,7 @@ function insertSingleItem(item, callback) {
     console.log(query);
     mysqlConnector.query(query, function(result, error) {
         if (error) {
-            callback({"message": "Could not locate the database"}, true);
+            callback(returnMessage("Could not locate the database"), true);
         }
     });
 }
@@ -84,7 +83,7 @@ function insertSingleItem(item, callback) {
 function getRoles(callback) {
     mysqlConnector.query("select role_id, role_name, role_description from Role", function(result, error) {
         if (error) {
-            callback({"message": "Could not locate any roles"}, true);
+            callback(returnMessage("Could not locate any roles"), true);
         } else {
             callback(result, false);
         }
@@ -94,7 +93,7 @@ function getRoles(callback) {
 function getUsers(callback) {
     mysqlConnector.query("select user_id, first_name, last_name, email from User", function(result, error) {
         if (error) {
-            callback({"message": "Could not locate any users"}, true);
+            callback(returnMessage("Could not locate any users"), true);
         } else {
             callback(result, false);
         }
@@ -109,13 +108,13 @@ function deleteShift(req, callback) {
     // search for shift id, if it exists, update to inactive
     mysqlConnector.query("select shift_id from Shift where shift_id = " + shift_id + " and active = TRUE;", function(result, error) {
         if (error || result.length === 0) {
-            callback({"message": "Could not locate any shift"}, true);
+            callback(returnMessage("Could not locate any shift"), true);
         }
         mysqlConnector.query("update shift set active = FALSE where shift_id = " + shift_id + ";", function(result, error) {
             if (error) {
-                callback({"message": "Could not locate any shift"}, true);
+                callback(returnMessage("Could not locate any shift"), true);
             } else {
-                callback({"message": "Delete has been executed"}, false);
+                callback(returnMessage("Delete has been executed"), false);
             }
         });
     });
@@ -136,7 +135,7 @@ function updateShift(req, callback) {
     let shiftQuery = "select shift_id from Shift where shift_id = " + shift_id + " and active = TRUE;";
     mysqlConnector.query(shiftQuery, function(result, error) {
         if (error || result.length === 0) {
-            callback({"message": "Could not locate any shift"}, true);
+            callback(returnMessage("Could not locate any shift"), true);
         }
         let query = "update shift set active = TRUE, " +
             "approved = " + (approval) + ", " +
@@ -148,9 +147,9 @@ function updateShift(req, callback) {
         console.log("query: ", query);
         mysqlConnector.query(query, function(result, error) {
             if (error) {
-                callback({"message": "Could not locate any shift"}, true);
+                callback(returnMessage("Could not locate any shift"), true);
             } else {
-                callback({"message": "Update is complete"}, false);
+                callback(returnMessage("Update is complete"), false);
             }
         });
     });
@@ -159,16 +158,59 @@ function updateShift(req, callback) {
 function loginUser(req, callback) {
     let email = req.body.email;
     let password = req.body.password;
-    let loginQuery = "select email, password, can_edit from user where email = " + mysqlConnector.santise(email) + ";";
+    let loginQuery = "select first_name, last_name, email, password, can_edit from user where email = " + mysqlConnector.santise(email) + ";";
     mysqlConnector.query(loginQuery, function(result, error) {
         if (error || result.length === 0) {
-            callback({"message": "Could not locate any user"}, true);
+            callback(returnMessage("Could not locate any user"), true);
         } else if (("'" + result[0].password + "'") === mysqlConnector.santise(password)) {
-            callback({"can_edit": result[0].can_edit}, false);
+            let user = {
+                first_name: result[0].first_name,
+                last_name: result[0].last_name,
+                email: result[0].email,
+                can_edit: result[0].can_edit
+            };
+
+            callback(user, false);
         } else {
-            callback({"message": "Could not locate any user"}, true);
+            callback(returnMessage("Could not locate any user"), true);
         }
     })
+}
+
+function registerUser(req, callback) {
+    let first_name = mysqlConnector.santise(req.body.user.first_name);
+    let last_name = mysqlConnector.santise(req.body.user.last_name);
+    let email = mysqlConnector.santise(req.body.user.email);
+    let password = mysqlConnector.santise(req.body.user.password);
+
+    let can_edit = mysqlConnector.santise(req.body.user.can_edit);
+    // check if email is not taken
+
+    console.log(can_edit);
+    if (can_edit !== "'TRUE'") {
+        can_edit = 'FALSE';
+    } else {
+        can_edit = 'TRUE';
+    }
+
+    mysqlConnector.query("select email from user where email = " + email, function(result, error) {
+        if (error || result.length > 0) {
+            callback(returnMessage("Email already exists"), false);
+        } else {
+            let registerQuery = "insert into user (first_name, last_name, email, password, salt, can_edit) " +
+                "values (" + first_name + "," + last_name + "," + email + "," + password + ",123, " + can_edit + ");";
+            mysqlConnector.query(registerQuery, function(result, error) {
+                if (error) {
+                    callback(returnMessage("Could not add the user"), true);
+                }
+                callback(returnMessage("Successfully registered user " + email));
+            });
+        }
+    });
+}
+
+function returnMessage(message) {
+    return {"message": message};
 }
 
 module.exports = {
@@ -178,5 +220,6 @@ module.exports = {
     insert: insert,
     deleteShift: deleteShift,
     updateShift: updateShift,
-    loginUser: loginUser
+    loginUser: loginUser,
+    registerUser: registerUser
 };

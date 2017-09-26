@@ -1,9 +1,7 @@
 const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysqlConnector = require('./mysql-connector');
 const services = require('./services/services');
-const login = require('./login');
 
 let app = express();
 
@@ -57,6 +55,12 @@ app.post(REST_PREFIX + "update", function(req, res) {
 
 app.post(REST_PREFIX + "login", function(req, res) {
     services.loginUser(req, function(result, error) {
+        sendResponse(res, result, error);
+    })
+});
+
+app.post(REST_PREFIX + "register", function(req, res) {
+    services.registerUser(req, function(result, error) {
         sendResponse(res, result, error);
     })
 });

@@ -5,6 +5,9 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
     $scope.users = [];
     $scope.queriedEvents = [];
 
+    let roleFilter;
+    let userFilter;
+
     let options = {
         defaultView: "agendaWeek",
         footer: {
@@ -44,7 +47,8 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         ],
         // this method can create events
         dayClick: function(event, jsEvent, view) {
-            if (loginService.canEdit) {
+            //if (loginService.canEdit) {
+            {
                 dataService.setDetails(event);
                 dataService.showCreationPrompt(event);
             }
@@ -77,12 +81,13 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
     function updateExistingEvent(event) {
         // locate event in array
         // replace all the item in array
+        console.log(event);
         event.source = "";
-        newEvents[event.id] = event;
+        newEvents[event.event_ui_id] = event;
     }
 
     let newEvents = [];
-    let timetable = $('.timetable');
+    let timetable = $('#all-schedules');
 
     $scope.init = function() {
         timetable.fullCalendar(options);
@@ -107,13 +112,13 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
     $scope.loadCalendar = function () {
         let event = createNewEvent();
         newEvents.push(event);
-        $('.timetable').fullCalendar('renderEvent', event);
+        timetable.fullCalendar('renderEvent', event);
     };
 
     function addEvent(triggerEvent, data) {
         let newEvent = createNewEvent(data.details, data.selectedRole, data.selectedUser);
         newEvents.push(newEvent);
-        $('.timetable').fullCalendar('renderEvent', newEvent);
+        timetable.fullCalendar('renderEvent', newEvent);
     }
 
     function removeEvent(triggerEvent, calendar_id) {
@@ -174,12 +179,10 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
 
     $scope.$on("createNewEvent", addEvent);
     $scope.$on("removeEvent", removeEvent);
-    $scope.$on("reload", refetchTimetable);
+    $scope.$on("reloadEntireCalendar", refetchTimetable);
     $scope.$on("sendEventUpdates", $scope.sendUpdates);
     $scope.$on("updateCalendarEvent", updateCalendarEvent);
-
-    let roleFilter;
-    let userFilter;
+    $scope.$on("canEditFullCalendar", canEditFullCalendar);
 
     $scope.onRoleFilterChange = function(filteredRole) {
         // clear timetable
@@ -238,8 +241,8 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
     }
 
     function refetchTimetable() {
-        timetable.fullCalendar("removeEvents");
-        timetable.fullCalendar('refetchEvents');
+        //timetable.fullCalendar("removeEvents");
+        timetable.fullCalendar("refetchEvents");
         $("select").each(function() { this.selectedIndex = 0 });
     }
 
@@ -252,9 +255,17 @@ app.controller("calendarCtrl", function($scope, $http, messageService, dataServi
         }
         return results;
     }
+
+    function canEditFullCalendar(triggerEvent) {
+        canEdit = loginService.canEdit;
+    }
 });
 
 app.service("dataService", function($rootScope, $http, messageService) {
+    this.setEditFullCalendar = function() {
+        $rootScope.$broadcast("canEditFullCalendar");
+    };
+
     this.setRoles = function(roles) {
         this.roles = roles;
     };
@@ -279,7 +290,7 @@ app.service("dataService", function($rootScope, $http, messageService) {
     };
 
     this.reload = function() {
-        $rootScope.$broadcast("reload");
+        $rootScope.$broadcast("reloadEntireCalendar");
     };
 
     this.showEditingPrompt = function(event) {

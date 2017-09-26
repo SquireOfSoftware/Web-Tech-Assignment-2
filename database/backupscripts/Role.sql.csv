@@ -1,0 +1,6 @@
+role_id,role_name,role_description
+1,"Front desk","Welcoming people"
+2,Cook,"You cook things"
+3,Cashier,"Get orders, collect money"
+4,Drive-through,"Collect orders"
+5,Unassigned,"Please assign a role"

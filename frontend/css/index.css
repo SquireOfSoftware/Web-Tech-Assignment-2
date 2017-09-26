@@ -27,6 +27,15 @@
     padding: 5px;
 }
 
+.credentials-box {
+    width: 100%;
+    bottom: 50%;
+    margin: auto;
+    position: absolute;
+    padding: 20px;
+    background-color: cornflowerblue;
+}
+
 .message {
     top: 0;
     bottom: 0;
@@ -42,7 +51,6 @@
     z-index: 10;
     color: white;
 
-    min-height: 20%;
     min-height: initial;
 
     background-color: white;
@@ -97,9 +105,9 @@
     background-color: yellow;
 }
 
-#login {
-    display: inherit;
-
+#login-overlay {
+    /*display: inherit;*/
+    display: none;
 }
 
 #viewing {
@@ -107,12 +115,11 @@
 }
 
 #login-box {
-    width: 100%;
-    bottom: 50%;
-    margin: auto;
-    position: absolute;
-    padding: 20px;
-    background-color: cornflowerblue;
+
+}
+
+#register-box {
+    display: none;
 }
 
 #date-prompt {
@@ -131,7 +138,7 @@
     /*width: 100%;*/
 }
 
-#login-submission-button {
+#login-submission-button, #register-submission-button {
 
     background-color: #0056b3;
 }

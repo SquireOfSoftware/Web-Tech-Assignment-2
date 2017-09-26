@@ -1,4 +1,6 @@
-app.controller("menuCtrl", function($rootScope, $scope, dataService) {
+app.controller("menuCtrl", function($rootScope, $scope, dataService, loginService) {
+    $scope.isLoggedIn = false;
+
     $scope.showEditPage = function() {
         hideScreens();
         $('#editing').show();
@@ -9,9 +11,8 @@ app.controller("menuCtrl", function($rootScope, $scope, dataService) {
         $('#viewing').show();
     };
 
-    $scope.showProfile = function() {
+    $scope.showPersonalShifts = function() {
         hideScreens();
-        $('#profile').show();
     };
 
     $scope.showInfo = function() {
@@ -26,6 +27,22 @@ app.controller("menuCtrl", function($rootScope, $scope, dataService) {
     $scope.sendUpdates = function() {
         $rootScope.$broadcast("sendEventUpdates");
     };
+
+    $scope.login = function() {
+        loginService.showLogin();
+    };
+
+    $scope.logout = function() {
+        loginService.logout();
+        $scope.isLoggedIn = false;
+    };
+
+    $scope.$on("loggedIn", function(triggerEvent, user) {
+        // change screens to display
+        $scope.isLoggedIn = true;
+        $scope.user = user;
+        console.log($scope.user);
+    });
 
     function hideScreens() {
         $('.screen').hide();
