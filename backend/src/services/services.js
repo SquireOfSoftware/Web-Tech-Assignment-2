@@ -131,7 +131,7 @@ function updateShift(req, callback) {
     let shift_id = mysqlConnector.santise(req.query.shift_id);
     let updatedEvent = req.body.updatedEvent;
     console.log(updatedEvent);
-    let approval = mysqlConnector.santise(updatedEvent.approval.value);
+    let approval = mysqlConnector.santise(updatedEvent.approval);
     let user_id = mysqlConnector.santise(updatedEvent.employee.id);
     let role_id = mysqlConnector.santise(updatedEvent.role.id);
     let start_time = mysqlConnector.santise(updatedEvent.start);

@@ -24,7 +24,7 @@ app.controller("menuCtrl", function($rootScope, $scope, dataService) {
     };
 
     $scope.sendUpdates = function() {
-        $rootScope.$broadcast("sendUpdates");
+        $rootScope.$broadcast("sendEventUpdates");
     };
 
     function hideScreens() {
