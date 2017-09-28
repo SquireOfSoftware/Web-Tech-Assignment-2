@@ -1,4 +1,5 @@
 # Rosterboy
+https://github.com/SquireOfSoftware/Web-Tech-Assignment-2
 
 The project is named Rosterboy until a better name is determined.
 
@@ -12,3 +13,8 @@ The problems are:
 - Difficult to change (once printed its generally difficult change)
 
 The aim of this project is to make this process occur on the web so that changes can be made but also that it is viewable across a multitude of platforms.
+
+There are three directories: 
+1. Backend - which is the NodeJS Server
+2. Database - which is the MySQL database schema files
+3. Frontend - which is the User interface for people to visit and use 

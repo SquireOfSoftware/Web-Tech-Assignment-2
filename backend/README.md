@@ -2,9 +2,12 @@
 
 This is the backend system composed of node which can be run as a stand alone API server.
 
-It uses REST to serve out content and talks to the MySQL database.
+It uses service endpoints to serve out content and talks to the MySQL database.
 
 # Installation
+
+Before starting please make sure that you have NodeJS installed.
+https://nodejs.org/en/
 
 Open this root directory *"backend"* in a Terminal or command line and type *"npm install"*.
 
